@@ -42,4 +42,35 @@ public class Globals {
     public static int wait5 = 200;
     public static int wait6 = 500;
 
+    public static int DOWN_POS = 0;
+    public static int ROW1_POS = 0;
+    public static int ROW2_POS = 0;
+    public static int ROW3_POS = 0;
+    public static int ROW4_POS = 0;
+    public static int ROW5_POS = 0;
+    public static int ROW6_POS = 0;
+    public static int ROW7_POS = 0;
+    public static int ROW8_POS = 0;
+    public static int ROW9_POS = 0;
+    public static int ROW10_POS = 0;
+    public static int ROW11_POS = 0;
+
+    public static double LIFT_MAX_V = 0;
+    public static double LIFT_MAX_A = 0;
+    public static double LIFT_MAX_A_RETRACT = 0;
+    public static double LIFT_MAX_D = 0;
+
+    public static double LIFT_LATCHED = 0;
+    public static double LIFT_INTERMEDIATE = 0;
+    public static double LIFT_UNLATCHED = 0;
+
+    public static final double LIFT_TICKS_PER_INCH = 0;
+
+    public static double LIFT_MANUAL_FACTOR = 0;
+    public static double LIFT_MIN = 0;
+    public static double LIFT_MAX = 0;
+
+    public static double LIFT_EXTENDED_TOLERANCE = 0;
+    public static double LIFT_ERROR_TOLERANCE = 0;
+
 }

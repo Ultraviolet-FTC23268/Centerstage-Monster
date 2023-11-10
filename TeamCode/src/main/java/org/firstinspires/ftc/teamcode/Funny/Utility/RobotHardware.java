@@ -55,8 +55,11 @@ public class RobotHardware {
     public AnalogInput backLeftEncoder;
     public AnalogInput backRightEncoder;
 
+    public Motor.Encoder leftArmEncoder;
+    public Motor.Encoder rightArmEncoder;
+
     public Motor.Encoder parallelPod;
-    public Motor.Encoder perpindicularPod;
+    public Motor.Encoder perpendicularPod;
 
     public RevBlinkinLedDriver LEDcontroller;
 
@@ -135,12 +138,17 @@ public class RobotHardware {
         backLeftEncoder = hardwareMap.get(AnalogInput.class, "backLeftEncoder");
         backRightEncoder = hardwareMap.get(AnalogInput.class, "backRightEncoder");
 
+        leftArmEncoder = new MotorEx(hardwareMap, "leftArmMotor").encoder;
+        leftArmEncoder.setDirection(Motor.Direction.FORWARD);
+        rightArmEncoder = new MotorEx(hardwareMap, "rightArmMotor").encoder;
+        rightArmEncoder.setDirection(Motor.Direction.FORWARD);
+
         LEDcontroller = hardwareMap.get(RevBlinkinLedDriver.class, "LEDcontroller");
 
         parallelPod = new MotorEx(hardwareMap, "backLeftMotor").encoder;
         parallelPod.setDirection(Motor.Direction.FORWARD);
-        perpindicularPod = new MotorEx(hardwareMap, "backRightMotor").encoder;
-        perpindicularPod.setDirection(Motor.Direction.FORWARD);
+        perpendicularPod = new MotorEx(hardwareMap, "backRightMotor").encoder;
+        perpendicularPod.setDirection(Motor.Direction.FORWARD);
 
         frontRightMotor.setDirection(DcMotorEx.Direction.FORWARD);
         frontLeftMotor.setDirection(DcMotorEx.Direction.FORWARD);
@@ -189,7 +197,7 @@ public class RobotHardware {
     public void reset() {
         try {
             parallelPod.reset();
-            perpindicularPod.reset();
+            perpendicularPod.reset();
         } catch (Exception e) {
         }
         imu.resetYaw();
