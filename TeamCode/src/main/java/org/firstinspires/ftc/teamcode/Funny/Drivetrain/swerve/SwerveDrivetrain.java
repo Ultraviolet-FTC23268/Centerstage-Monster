@@ -19,7 +19,7 @@ public class SwerveDrivetrain implements Drivetrain {
 
     public static double TRACK_WIDTH = 12.25, WHEEL_BASE = 12.25;
     private final double R;
-    public static double frontLeftOffset = 1.49, frontRightOffset = 1.5, backLeftOffset = 1.72, backRightOffset = 1.48;
+    public static double frontLeftOffset = .17, frontRightOffset = 1, backLeftOffset = -.3, backRightOffset = 1.1; //1.49, 1.5, 1.72, 1.48
 
     public static boolean maintainHeading = false;
 

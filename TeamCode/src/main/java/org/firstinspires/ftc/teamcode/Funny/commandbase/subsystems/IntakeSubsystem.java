@@ -40,7 +40,7 @@ public class IntakeSubsystem {
 
     public void update(IntakeState state) {
 
-        intakeState = state;
+        /*intakeState = state;
         switch (state) {
 
             case OFF:
@@ -59,7 +59,7 @@ public class IntakeSubsystem {
                 robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP2_HEARTBEAT_FAST);
                 break;
 
-        }
+        }*/
 
     }
 

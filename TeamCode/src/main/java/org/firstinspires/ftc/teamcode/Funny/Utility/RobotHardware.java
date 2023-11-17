@@ -59,7 +59,7 @@ public class RobotHardware {
     public Motor.Encoder rightArmEncoder;
 
     public Motor.Encoder parallelPod;
-    public Motor.Encoder perpendicularPod;
+    public Motor.Encoder perpindicularPod;
 
     public RevBlinkinLedDriver LEDcontroller;
 
@@ -117,11 +117,11 @@ public class RobotHardware {
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "backLeftMotor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "backRightMotor");
 
-        armLeftMotor = hardwareMap.get(DcMotorEx.class, "dr4bLeft");
+        /*armLeftMotor = hardwareMap.get(DcMotorEx.class, "dr4bLeft");
         armRightMotor = hardwareMap.get(DcMotorEx.class, "dr4bRight");
 
         droneMotor = hardwareMap.get(DcMotorEx.class, "droneMotor");
-        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");*/
 
         frontLeftServo = hardwareMap.get(CRServo.class, "frontLeftServo");
         frontRightServo = hardwareMap.get(CRServo.class, "frontRightServo");
@@ -138,22 +138,23 @@ public class RobotHardware {
         backLeftEncoder = hardwareMap.get(AnalogInput.class, "backLeftEncoder");
         backRightEncoder = hardwareMap.get(AnalogInput.class, "backRightEncoder");
 
-        leftArmEncoder = new MotorEx(hardwareMap, "leftArmMotor").encoder;
+        /*leftArmEncoder = new MotorEx(hardwareMap, "leftArmEncoder").encoder;
         leftArmEncoder.setDirection(Motor.Direction.FORWARD);
-        rightArmEncoder = new MotorEx(hardwareMap, "rightArmMotor").encoder;
+        rightArmEncoder = new MotorEx(hardwareMap, "rightArmEncoder").encoder;
         rightArmEncoder.setDirection(Motor.Direction.FORWARD);
 
-        LEDcontroller = hardwareMap.get(RevBlinkinLedDriver.class, "LEDcontroller");
+        LEDcontroller = hardwareMap.get(RevBlinkinLedDriver.class, "LEDcontroller");*/
 
         parallelPod = new MotorEx(hardwareMap, "backLeftMotor").encoder;
         parallelPod.setDirection(Motor.Direction.FORWARD);
-        perpendicularPod = new MotorEx(hardwareMap, "backRightMotor").encoder;
-        perpendicularPod.setDirection(Motor.Direction.FORWARD);
+        perpindicularPod = new MotorEx(hardwareMap, "backRightMotor").encoder;
+        perpindicularPod.setDirection(Motor.Direction.FORWARD);
 
-        frontRightMotor.setDirection(DcMotorEx.Direction.FORWARD);
-        frontLeftMotor.setDirection(DcMotorEx.Direction.FORWARD);
-        backLeftMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        frontRightMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        backLeftMotor.setDirection(DcMotorEx.Direction.FORWARD);
         backRightMotor.setDirection(DcMotorEx.Direction.FORWARD);
+
 
     }
 
@@ -197,7 +198,7 @@ public class RobotHardware {
     public void reset() {
         try {
             parallelPod.reset();
-            perpendicularPod.reset();
+            perpindicularPod.reset();
         } catch (Exception e) {
         }
         imu.resetYaw();

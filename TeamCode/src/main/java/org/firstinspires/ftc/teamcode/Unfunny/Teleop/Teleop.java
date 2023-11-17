@@ -77,7 +77,7 @@ public class Teleop extends CommandOpMode {
 
         robot.enabled = true;
 
-        robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_2_COLOR_WAVES);
+        //robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_2_COLOR_WAVES);
 
         gamepadEx.getGamepadButton(GamepadKeys.Button.Y)
                 .whenPressed(() -> schedule(new IntakeCommand(intake, IntakeSubsystem.IntakeState.IDLE)));
@@ -88,7 +88,7 @@ public class Teleop extends CommandOpMode {
         gamepadEx.getGamepadButton(GamepadKeys.Button.B)
                 .whenPressed(() -> schedule(new IntakeCommand(intake, IntakeSubsystem.IntakeState.OFF)));
 
-        gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+        /*gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .whenPressed(() -> robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE));
         gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
                 .whenPressed(() -> robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW));
@@ -97,7 +97,7 @@ public class Teleop extends CommandOpMode {
         gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
                 .whenPressed(() -> robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.HOT_PINK));
 
-        gamepadEx2.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+       *gamepadEx2.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .whenPressed(() -> schedule(new LiftCommand(lift, LiftSubsystem.LiftState.UPWARDS)));
         gamepadEx2.getGamepadButton(GamepadKeys.Button.A)
                 .whenPressed(() -> schedule(new LiftCommand(lift, LiftSubsystem.LiftState.OFF)));
@@ -107,7 +107,7 @@ public class Teleop extends CommandOpMode {
         gamepadEx2.getGamepadButton(GamepadKeys.Button.X)
                 .whenPressed(() -> robot.droneMotor.setPower(1));
         gamepadEx2.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(() -> robot.droneMotor.setPower(0));
+                .whenPressed(() -> robot.droneMotor.setPower(0));*/
 
     }
 
