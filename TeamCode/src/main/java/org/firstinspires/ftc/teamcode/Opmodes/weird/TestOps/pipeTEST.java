@@ -24,7 +24,8 @@ public class pipeTEST extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Globals.COLOR = Side.BLUE;
+        Globals.COLOR = Side.RED;
+        Globals.SIDE = Side.RIGHT;
 
         propPipeline = new PropPipeline();
         portal = new VisionPortal.Builder()
@@ -44,7 +45,10 @@ public class pipeTEST extends LinearOpMode {
             telemetry.addData("Location", propPipeline.getLocation());
             //telemetry.addData("leftZone", propPipeline.left.mul(scale).toString());
             //telemetry.addData("centerZone", propPipeline.center.mul(scale).toString());
-            telemetry.addData("leftZone", propPipeline.leftColor);
+            if(Globals.SIDE == Side.LEFT)
+                telemetry.addData("leftZone", propPipeline.leftColor);
+            else
+                telemetry.addData("rightZone", propPipeline.rightColor);
             telemetry.addData("centerZone", propPipeline.centerColor);
             telemetry.update();
         }
