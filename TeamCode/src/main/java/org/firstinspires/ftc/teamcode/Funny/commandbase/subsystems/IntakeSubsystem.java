@@ -38,6 +38,7 @@ public class IntakeSubsystem {
     }
 
 
+    /*
     public void update(IntakeState state) {
 
         intakeState = state;
@@ -62,6 +63,8 @@ public class IntakeSubsystem {
         }
 
     }
+
+     */
 
     public void loop2() {}
 

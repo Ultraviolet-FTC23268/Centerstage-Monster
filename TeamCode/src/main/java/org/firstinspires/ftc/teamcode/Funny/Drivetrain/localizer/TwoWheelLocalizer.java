@@ -25,7 +25,7 @@ public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer implements Loca
     public static double PERPENDICULAR_X = 0; // -3.61212 old
     public static double PERPENDICULAR_Y = 8;
 
-    private final DoubleSupplier horizontalPosition, lateralPosition, imuAngle;
+    private final DoubleSupplier horizontalPosition, imuAngle, lateralPosition;
 
     public TwoWheelLocalizer(RobotHardware robot) {
 
@@ -39,6 +39,8 @@ public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer implements Loca
         this.imuAngle = robot::getAngle;
 
     }
+
+
 
     public static double encoderTicksToInches(double ticks) {
         return WHEEL_RADIUS * 2 * Math.PI * GEAR_RATIO * ticks / TICKS_PER_REV;

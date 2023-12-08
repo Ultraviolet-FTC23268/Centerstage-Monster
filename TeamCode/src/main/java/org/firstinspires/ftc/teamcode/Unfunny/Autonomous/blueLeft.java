@@ -56,7 +56,7 @@ public class blueLeft extends LinearOpMode{
 
         robot.enabled = true;
 
-        robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_2_COLOR_WAVES);
+        //robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_2_COLOR_WAVES);
 
         telemetry.addLine("RAAAAHHHHHHH");
 

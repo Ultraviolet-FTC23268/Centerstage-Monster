@@ -50,9 +50,11 @@ public class armTest extends CommandOpMode {
 
         gamepadEx = new GamepadEx(gamepad1);
         gamepadEx2 = new GamepadEx(gamepad2);
-
+/*
         robot.armLeftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         robot.armRightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+ */
 
         /*PhotonCore.CONTROL_HUB.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         PhotonCore.experimental.setMaximumParallelCommands(8);
@@ -81,7 +83,7 @@ public class armTest extends CommandOpMode {
             timer = new ElapsedTime();
             robot.reset();
         }
-
+/*
         gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .whenPressed(() -> robot.armLeftMotor.setPower(1));
         gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_UP)
@@ -96,6 +98,8 @@ public class armTest extends CommandOpMode {
                 .whenPressed(() -> robot.armLeftMotor.setPower(0));
         gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
                 .whenPressed(() -> robot.armRightMotor.setPower(0));
+
+ */
 
         drivetrain.read();
         drivetrain.updateModules();

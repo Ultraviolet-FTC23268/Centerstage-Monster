@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.Funny.commandbase.subsystems.IntakeSubsyst
 public class IntakeCommand extends InstantCommand {
     public IntakeCommand(IntakeSubsystem intake, IntakeSubsystem.IntakeState state) {
         super(
-                () -> intake.update(state)
+                //() -> intake.update(state)
         );
     }
 }

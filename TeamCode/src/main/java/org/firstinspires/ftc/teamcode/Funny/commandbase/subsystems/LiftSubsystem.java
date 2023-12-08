@@ -163,8 +163,11 @@ public class LiftSubsystem {
     }
     public void read() {
         try {
+            /*
             leftLiftPos = robot.leftArmEncoder.getPosition();
             rightLiftPos = robot.rightArmEncoder.getPosition();
+
+             */
 
         } catch (Exception e) {
             leftLiftPos = 0;

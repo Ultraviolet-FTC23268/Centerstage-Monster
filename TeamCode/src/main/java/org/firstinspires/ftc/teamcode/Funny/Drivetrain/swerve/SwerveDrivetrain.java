@@ -19,7 +19,8 @@ public class SwerveDrivetrain implements Drivetrain {
 
     public static double TRACK_WIDTH = 12.25, WHEEL_BASE = 12.25;
     private final double R;
-    public static double frontLeftOffset = 1.49, frontRightOffset = 1.5, backLeftOffset = 1.72, backRightOffset = 1.48;
+    //public static double frontLeftOffset = 1.49, frontRightOffset = 1.5, backLeftOffset = 1.72, backRightOffset = 1.48;
+    public static double frontLeftOffset = 0.20, frontRightOffset = 1.05, backLeftOffset = 3.04, backRightOffset = 1.15;
 
     public static boolean maintainHeading = false;
 
@@ -33,6 +34,7 @@ public class SwerveDrivetrain implements Drivetrain {
     private boolean locked = false;
 
     public SwerveDrivetrain(RobotHardware robot) {
+
         frontLeftModule = new SwerveModule(robot.frontLeftMotor, robot.frontLeftServo, new AbsoluteAnalogEncoder(robot.frontLeftEncoder, 3.3).zero(frontLeftOffset).setInverted(true));
         backLeftModule = new SwerveModule(robot.backLeftMotor, robot.backLeftServo, new AbsoluteAnalogEncoder(robot.backLeftEncoder, 3.3).zero(backLeftOffset).setInverted(true));
         backRightModule = new SwerveModule(robot.backRightMotor, robot.backRightServo, new AbsoluteAnalogEncoder(robot.backRightEncoder, 3.3).zero(backRightOffset).setInverted(true));

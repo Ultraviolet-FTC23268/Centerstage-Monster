@@ -1,3 +1,4 @@
+/*
 package org.firstinspires.ftc.teamcode.Funny.commandbase.bobot;
 
 import com.arcrobotics.ftclib.command.InstantCommand;
@@ -11,3 +12,5 @@ public class LiftCommand extends InstantCommand {
         );
     }
 }
+
+ */

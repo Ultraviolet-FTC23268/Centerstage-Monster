@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.Funny.Utility.RobotHardware;
 import org.firstinspires.ftc.teamcode.Funny.commandbase.subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.Funny.commandbase.bobot.IntakeCommand;
 import org.firstinspires.ftc.teamcode.Funny.commandbase.subsystems.LiftSubsystem;
-import org.firstinspires.ftc.teamcode.Funny.commandbase.bobot.LiftCommand;
+//import org.firstinspires.ftc.teamcode.Funny.commandbase.bobot.LiftCommand;
 
 //@Photon(maximumParallelCommands = 8)
 @Config
@@ -42,7 +42,7 @@ public class Teleop extends CommandOpMode {
     private final RobotHardware robot = RobotHardware.getInstance();
     private SwerveDrivetrain drivetrain;
     private IntakeSubsystem intake;
-    private LiftSubsystem lift;
+    //private LiftSubsystem lift;
 
     private SlewRateLimiter fw;
     private SlewRateLimiter str;
@@ -70,14 +70,14 @@ public class Teleop extends CommandOpMode {
         robot.init(hardwareMap, telemetry);
         drivetrain = new SwerveDrivetrain(robot);
         intake = new IntakeSubsystem(robot);
-        lift = new LiftSubsystem(robot);
+        //lift = new LiftSubsystem(robot);
         gamepadEx = new GamepadEx(gamepad1);
         gamepadEx2 = new GamepadEx(gamepad2);
         localizer = new TwoWheelLocalizer(robot);
 
         robot.enabled = true;
 
-        robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_2_COLOR_WAVES);
+        //robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_2_COLOR_WAVES);
 
         gamepadEx.getGamepadButton(GamepadKeys.Button.Y)
                 .whenPressed(() -> schedule(new IntakeCommand(intake, IntakeSubsystem.IntakeState.IDLE)));
@@ -88,6 +88,7 @@ public class Teleop extends CommandOpMode {
         gamepadEx.getGamepadButton(GamepadKeys.Button.B)
                 .whenPressed(() -> schedule(new IntakeCommand(intake, IntakeSubsystem.IntakeState.OFF)));
 
+        /*
         gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .whenPressed(() -> robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE));
         gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
@@ -97,6 +98,8 @@ public class Teleop extends CommandOpMode {
         gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
                 .whenPressed(() -> robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.HOT_PINK));
 
+         */
+/*
         gamepadEx2.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .whenPressed(() -> schedule(new LiftCommand(lift, LiftSubsystem.LiftState.UPWARDS)));
         gamepadEx2.getGamepadButton(GamepadKeys.Button.A)
@@ -104,10 +107,14 @@ public class Teleop extends CommandOpMode {
         gamepadEx2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
                 .whenPressed(() -> schedule(new LiftCommand(lift, LiftSubsystem.LiftState.DOWNWARDS)));
 
+ */
+/*
         gamepadEx2.getGamepadButton(GamepadKeys.Button.X)
                 .whenPressed(() -> robot.droneMotor.setPower(1));
         gamepadEx2.getGamepadButton(GamepadKeys.Button.Y)
                 .whenPressed(() -> robot.droneMotor.setPower(0));
+
+ */
 
     }
 
