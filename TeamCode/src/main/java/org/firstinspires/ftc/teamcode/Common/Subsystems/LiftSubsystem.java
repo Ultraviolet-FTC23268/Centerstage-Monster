@@ -18,8 +18,6 @@ public class LiftSubsystem extends SubsystemBase {
 
     private RobotHardware robot;
 
-    public LiftState liftState = LiftState.OFF;
-
     private final ElapsedTime timer;
     private AsymmetricMotionProfile liftProfile;
     public ProfileState liftMotionState;
@@ -30,6 +28,8 @@ public class LiftSubsystem extends SubsystemBase {
     public int leftLiftPos;
     public int rightLiftPos;
     public double power = 0.0;
+
+    public static int rowPos = 4;
     public static int targetPosition = 0;
     public static double liftRaiseSpeed = 1;
     public static double liftLowerSpeed = -1;
@@ -37,19 +37,12 @@ public class LiftSubsystem extends SubsystemBase {
     public boolean isReady = false;
 
     public double time = 0.0;
-    public boolean resetting = false;
+    public static boolean isUp = false;
 
     public static double P = 0.0065;
     public static double I = 0;
     public static double D = 0.00025;
     public static double F = 0;
-
-
-    public enum LiftState {
-        OFF,
-        UPWARDS,
-        DOWNWARDS
-    }
 
     public enum LiftStateReel {
         DOWN,
@@ -63,7 +56,8 @@ public class LiftSubsystem extends SubsystemBase {
         ROW8,
         ROW9,
         ROW10,
-        ROW11
+        ROW11,
+        MAX
     }
 
     public LiftSubsystem(RobotHardware robot) {
@@ -75,32 +69,14 @@ public class LiftSubsystem extends SubsystemBase {
 
     }
 
-
-    /*public void update(LiftState state) {
-
-        liftState = state;
-        switch (state) {
-
-            case OFF:
-                //robot.armLeftMotor.setPower(0);
-                //robot.armRightMotor.setPower(0);
-                break;
-            case UPWARDS:
-                //robot.armLeftMotor.setPower(liftRaiseSpeed);
-                //robot.armRightMotor.setPower(liftRaiseSpeed);
-                break;
-            case DOWNWARDS:
-                //robot.armLeftMotor.setPower(liftLowerSpeed);
-                //robot.armRightMotor.setPower(liftLowerSpeed);
-                break;
-
-        }
-
-    }*/
-
     public void update(LiftStateReel state) {
-
         liftStateReel = state;
+
+        if(state == LiftStateReel.DOWN)
+            isUp = false;
+        else
+            isUp = true;
+
         switch (state) {
 
             case DOWN:
@@ -139,8 +115,65 @@ public class LiftSubsystem extends SubsystemBase {
             case ROW11:
                 setTargetPos(ROW11_POS);
                 break;
+            case MAX:
+                setTargetPos(MAX_POS);
+                break;
 
         }
+
+    }
+
+    public void updateRowPos(int row) {
+
+        switch (row) {
+            case 1:
+                this.update(LiftStateReel.ROW1);
+                break;
+            case 2:
+                this.update(LiftStateReel.ROW2);
+                break;
+            case 3:
+                this.update(LiftStateReel.ROW3);
+                break;
+            case 4:
+                this.update(LiftStateReel.ROW4);
+                break;
+            case 5:
+                this.update(LiftStateReel.ROW5);
+                break;
+            case 6:
+                this.update(LiftStateReel.ROW6);
+                break;
+            case 7:
+                this.update(LiftStateReel.ROW7);
+                break;
+            case 8:
+                this.update(LiftStateReel.ROW8);
+                break;
+            case 9:
+                this.update(LiftStateReel.ROW9);
+                break;
+            case 10:
+                this.update(LiftStateReel.ROW10);
+                break;
+            case 11:
+                this.update(LiftStateReel.ROW11);
+                break;
+        }
+
+    }
+
+    public void changeRow(int amount) {
+
+        if(isUp)
+            rowPos += amount;
+
+        if(rowPos > 11)
+            rowPos = 11;
+        if(rowPos < 1)
+            rowPos = 1;
+
+        updateRowPos(rowPos);
 
     }
 
@@ -153,18 +186,23 @@ public class LiftSubsystem extends SubsystemBase {
             time = timer.time();
         }
 
-        withinTolerance = Math.abs(getLeftPos() - getTargetPos()) < LIFT_ERROR_TOLERANCE;
+        if(rowPos > 11)
+            rowPos=11;
+        if(rowPos < 1)
+            rowPos=1;
 
-        power = Range.clip(((-controller.calculate(leftLiftPos, targetPosition) + (F * Math.signum(targetPosition - leftLiftPos))) / robot.getVoltage() * 14), -1, 1);
+        withinTolerance = Math.abs(getRightPos() - getTargetPos()) < LIFT_ERROR_TOLERANCE;
 
-        if (resetting) {
-            power = 0.4; //retracting
+        power = Range.clip(((-controller.calculate(rightLiftPos, targetPosition) + (F * Math.signum(targetPosition - rightLiftPos))) / robot.getVoltage() * 14), -1, 1);
+
+        if (isWithinTolerance()) {
+            power = 0; //Turn off lift
         }
     }
     public void read() {
         try {
-            //leftLiftPos = robot.leftArmEncoder.getPosition();
-            //rightLiftPos = robot.rightArmEncoder.getPosition();
+            leftLiftPos = robot.leftArmEncoder.getPosition();
+            rightLiftPos = robot.rightArmEncoder.getPosition();
 
         } catch (Exception e) {
             leftLiftPos = 0;
@@ -224,6 +262,8 @@ public class LiftSubsystem extends SubsystemBase {
                 return ROW10_POS;
             case ROW11:
                 return ROW11_POS;
+            case MAX:
+                return MAX_POS;
         }
         return 0;
     }

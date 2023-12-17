@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.opencv.core.Scalar;
 
-//@Disabled
+@Disabled
 @Autonomous(name = "PipelineTest")
 public class pipeTEST extends LinearOpMode {
 
@@ -24,8 +24,8 @@ public class pipeTEST extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Globals.COLOR = Side.RED;
-        Globals.SIDE = Side.RIGHT;
+        Globals.COLOR = Side.BLUE;
+        Globals.SIDE = Side.LEFT;
 
         propPipeline = new PropPipeline();
         portal = new VisionPortal.Builder()
