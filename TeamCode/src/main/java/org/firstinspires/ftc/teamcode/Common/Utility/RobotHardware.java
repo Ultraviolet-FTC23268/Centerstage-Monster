@@ -120,7 +120,7 @@ public class RobotHardware {
         ///}
 
         modules.get(0).setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
-        modules.get(1).setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+        //modules.get(1).setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
 
         voltageTimer = new ElapsedTime();
 
@@ -250,7 +250,7 @@ public class RobotHardware {
         //    hub.clearBulkCache();
         //}
         modules.get(0).clearBulkCache();
-        modules.get(1).clearBulkCache();
+        //modules.get(1).clearBulkCache();
     }
 
     @Nonnegative

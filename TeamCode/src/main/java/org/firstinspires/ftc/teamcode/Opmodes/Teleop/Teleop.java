@@ -89,8 +89,8 @@ public class Teleop extends CommandOpMode {
         robot.enabled = true;
         robot.startIMUThread(this);
 
-        robot.droneLatch.setPosition(Globals.DRONE_CLOSED);
-        deposit.update(DepositSubsystem.DepositState.INTAKE);
+        //robot.droneLatch.setPosition(Globals.DRONE_CLOSED);
+        //deposit.update(DepositSubsystem.DepositState.INTAKE);
 
         //robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_2_COLOR_WAVES);
 
