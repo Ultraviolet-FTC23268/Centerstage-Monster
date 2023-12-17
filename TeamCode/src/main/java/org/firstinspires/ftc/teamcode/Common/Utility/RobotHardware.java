@@ -129,12 +129,12 @@ public class RobotHardware {
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "backLeftMotor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "backRightMotor");
 
-        armLeftMotor = new MotorEx(hardwareMap, "dr4bLeft");
+        /*armLeftMotor = new MotorEx(hardwareMap, "dr4bLeft");
         armLeftMotor.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         armRightMotor = new MotorEx(hardwareMap, "dr4bRight");
         armRightMotor.motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+        intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");*/
 
         frontLeftServo = hardwareMap.get(CRServo.class, "frontLeftServo");
         frontRightServo = hardwareMap.get(CRServo.class, "frontRightServo");
@@ -146,12 +146,12 @@ public class RobotHardware {
         turretServo = hardwareMap.get(Servo.class, "turret");
         wristServo = hardwareMap.get(Servo.class, "wrist");*/
 
-        leftElbow = hardwareMap.get(Servo.class, "leftServo");
+        /*leftElbow = hardwareMap.get(Servo.class, "leftServo");
         rightElbow = hardwareMap.get(Servo.class, "rightServo");
-        rightElbow.setDirection(Servo.Direction.REVERSE);
+        rightElbow.setDirection(Servo.Direction.REVERSE);*/
 
-        droneLatch = hardwareMap.get(Servo.class, "droneServo");
-        gateServo = hardwareMap.get(Servo.class, "gateServo");
+        //droneLatch = hardwareMap.get(Servo.class, "droneServo");
+        //gateServo = hardwareMap.get(Servo.class, "gateServo");
 
         frontLeftServo.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRightServo.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -163,10 +163,10 @@ public class RobotHardware {
         backLeftEncoder = hardwareMap.get(AnalogInput.class, "backLeftEncoder");
         backRightEncoder = hardwareMap.get(AnalogInput.class, "backRightEncoder");
 
-        leftArmEncoder = new MotorEx(hardwareMap, "dr4bLeft").encoder;
+        /*leftArmEncoder = new MotorEx(hardwareMap, "dr4bLeft").encoder;
         leftArmEncoder.setDirection(Motor.Direction.REVERSE);
         rightArmEncoder = new MotorEx(hardwareMap, "dr4bRight").encoder;
-        rightArmEncoder.setDirection(Motor.Direction.REVERSE);
+        rightArmEncoder.setDirection(Motor.Direction.REVERSE);*/
 
         //LEDcontroller = hardwareMap.get(RevBlinkinLedDriver.class, "LEDcontroller");
 
@@ -175,9 +175,9 @@ public class RobotHardware {
         perpindicularPod = new MotorEx(hardwareMap, "frontRightMotor").encoder;
         perpindicularPod.setDirection(Motor.Direction.FORWARD);
 
-        frontRightMotor.setDirection(DcMotorEx.Direction.FORWARD);
-        frontLeftMotor.setDirection(DcMotorEx.Direction.FORWARD);
-        backLeftMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        frontRightMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotorEx.Direction.REVERSE);
+        backLeftMotor.setDirection(DcMotorEx.Direction.FORWARD);
         backRightMotor.setDirection(DcMotorEx.Direction.FORWARD);
 
     }
