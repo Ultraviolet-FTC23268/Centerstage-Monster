@@ -39,17 +39,17 @@ public class PropPipeline implements VisionProcessor, CameraStreamSource {
 
     //Backdrop Side
 
-    public static int BackdropBlueLeftX = 95;
+    public static int BackdropBlueLeftX = 75;
     public static int BackdropBlueLeftY = 165;
 
-    public static int BackdropBlueCenterX = 655;
+    public static int BackdropBlueCenterX = 645;
     public static int BackdropBlueCenterY = 120;
 
     public static int BackdropRedRightX = 950;
-    public static int BackdropRedRightY = 100;
+    public static int BackdropRedRightY = 85;
 
-    public static int BackdropRedCenterX = 370;
-    public static int BackdropRedCenterY = 85;
+    public static int BackdropRedCenterX = 405;
+    public static int BackdropRedCenterY = 50;
 
     //Wing Side
 
@@ -68,8 +68,8 @@ public class PropPipeline implements VisionProcessor, CameraStreamSource {
     public static int width = 100;
     public static int height = 100;
 
-    public static double redThreshold = 1.75;
-    public static double blueThreshold = 0.5;
+    public static double redThreshold = 1.55;
+    public static double blueThreshold = 0.75;
     public static double threshold = 0;
 
     public double leftColor = 0.0;

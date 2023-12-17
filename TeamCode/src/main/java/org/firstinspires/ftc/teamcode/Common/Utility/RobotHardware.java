@@ -13,11 +13,16 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.LynxModuleMeta;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.LiftSubsystem;
@@ -40,7 +45,8 @@ public class RobotHardware {
     public MotorEx armLeftMotor;
     public MotorEx armRightMotor;
 
-    public DcMotorEx droneMotor;
+    public Servo droneLatch;
+    public Servo gateServo;
 
     public CRServo frontLeftServo;
     public CRServo frontRightServo;
@@ -55,13 +61,14 @@ public class RobotHardware {
     public Motor.Encoder leftArmEncoder;
     public Motor.Encoder rightArmEncoder;
 
-    public Servo leftClawServo;
-    public Servo rightClawServo;
-    public Servo turretServo;
-    public Servo wristServo;
+    public Servo leftPivotServo;
+    public Servo rightPivotServo;
+    public Servo leftElbow;
+    public Servo rightElbow;
 
+    public Servo wristServo;
     public Motor.Encoder parallelPod;
-    public Motor.Encoder perpendicularPod;
+    public Motor.Encoder perpindicularPod;
 
     public RevBlinkinLedDriver LEDcontroller;
 
@@ -70,6 +77,8 @@ public class RobotHardware {
     //public PhotonBHI260IMU imu;
     //public BHI260IMU imu;
     private BNO055IMU imu;
+
+    private Orientation angles;
     private Thread imuThread;
     private double imuAngle = 0;
     private double imuOffset = 0;
@@ -84,7 +93,7 @@ public class RobotHardware {
 
     private HardwareMap hardwareMap;
 
-    private final double startingIMUOffset = 0;
+    private final double startingIMUOffset = -Math.PI/2;
 
     public static RobotHardware getInstance() {
         if (instance == null) {
@@ -94,20 +103,22 @@ public class RobotHardware {
         return instance;
     }
 
-    RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-    RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
-
-    RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-
     public void init(HardwareMap hardwareMap, Telemetry telemetry) {
+
         this.hardwareMap = hardwareMap;
 
         this.imu = hardwareMap.get(BNO055IMU.class, "imu");
+
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
 
         modules = hardwareMap.getAll(LynxModule.class);
+
+        //for (LynxModule hub : modules) {
+        //    hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
+        ///}
+
         modules.get(0).setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         modules.get(1).setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
 
@@ -130,10 +141,17 @@ public class RobotHardware {
         backLeftServo = hardwareMap.get(CRServo.class, "backLeftServo");
         backRightServo = hardwareMap.get(CRServo.class, "backRightServo");
 
-        leftClawServo = hardwareMap.get(Servo.class, "leftClaw");
+        /*leftClawServo = hardwareMap.get(Servo.class, "leftClaw");
         rightClawServo = hardwareMap.get(Servo.class, "rightClaw");
         turretServo = hardwareMap.get(Servo.class, "turret");
-        wristServo = hardwareMap.get(Servo.class, "wrist");
+        wristServo = hardwareMap.get(Servo.class, "wrist");*/
+
+        leftElbow = hardwareMap.get(Servo.class, "leftServo");
+        rightElbow = hardwareMap.get(Servo.class, "rightServo");
+        rightElbow.setDirection(Servo.Direction.REVERSE);
+
+        droneLatch = hardwareMap.get(Servo.class, "droneServo");
+        gateServo = hardwareMap.get(Servo.class, "gateServo");
 
         frontLeftServo.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRightServo.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -150,12 +168,12 @@ public class RobotHardware {
         rightArmEncoder = new MotorEx(hardwareMap, "dr4bRight").encoder;
         rightArmEncoder.setDirection(Motor.Direction.REVERSE);
 
-        LEDcontroller = hardwareMap.get(RevBlinkinLedDriver.class, "LEDcontroller");
+        //LEDcontroller = hardwareMap.get(RevBlinkinLedDriver.class, "LEDcontroller");
 
-        parallelPod = new MotorEx(hardwareMap, "backLeftMotor").encoder;
-        parallelPod.setDirection(Motor.Direction.FORWARD);
-        perpendicularPod = new MotorEx(hardwareMap, "backRightMotor").encoder;
-        perpendicularPod.setDirection(Motor.Direction.FORWARD);
+        parallelPod = new MotorEx(hardwareMap, "frontLeftMotor").encoder;
+        parallelPod.setDirection(Motor.Direction.REVERSE);
+        perpindicularPod = new MotorEx(hardwareMap, "frontRightMotor").encoder;
+        perpindicularPod.setDirection(Motor.Direction.FORWARD);
 
         frontRightMotor.setDirection(DcMotorEx.Direction.FORWARD);
         frontLeftMotor.setDirection(DcMotorEx.Direction.FORWARD);
@@ -212,14 +230,25 @@ public class RobotHardware {
     public void reset() {
         try {
             parallelPod.reset();
-            perpendicularPod.reset();
+            perpindicularPod.reset();
         } catch (Exception e) {
         }
         //imu.resetYaw();
         //imuOffset = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
     }
 
+    public void periodic() {
+        if (voltageTimer.seconds() > 5) {
+            voltageTimer.reset();
+            voltage = hardwareMap.voltageSensor.iterator().next().getVoltage();
+        }
+
+    }
+
     public void clearBulkCache() {
+        //for (LynxModule hub : modules) {
+        //    hub.clearBulkCache();
+        //}
         modules.get(0).clearBulkCache();
         modules.get(1).clearBulkCache();
     }
@@ -234,7 +263,8 @@ public class RobotHardware {
             imuThread = new Thread(() -> {
                 while (!opMode.isStopRequested() && opMode.opModeIsActive()) {
                     synchronized (imuLock) {
-                        imuAngle = imu.getAngularOrientation().firstAngle + startingIMUOffset;
+                        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS);
+                        imuAngle = angles.firstAngle + startingIMUOffset;
                     }
                 }
             });

@@ -14,24 +14,28 @@ import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
 public class PositionCommand extends CommandBase {
     Localizer localizer;
     Drivetrain drivetrain;
-    Pose targetPose;
+    public Pose targetPose;
 
-    public static double xP = 0.0385;
-    public static double xD = 0.005;
+    public static double xP = 0.0385; //0.0385
+    public static double xD = 0.00; //0.005
 
-    public static double yP = 0.0385;
-    public static double yD = 0.005;
+    public static double yP = 0.0385; //0.0385
+    public static double yD = 0.00; //0.005
 
-    public static double hP = 0.75;
-    public static double hD = 0.02;
+    public static double hP = 0.575; //0.75
+    public static double hD = 0.1; //0.02
 
     public static double kStatic = 0.05;
 
-    public static PIDFController xController = new PIDFController(xP, 0.0, xD, 0);
-    public static PIDFController yController = new PIDFController(yP, 0.0, yD, 0);
-    public static PIDFController hController = new PIDFController(hP, 0.0, hD, 0);
+    public static PIDFController xController;
+    public static PIDFController yController;
+    public static PIDFController hController;
 
-    public static double ALLOWED_TRANSLATIONAL_ERROR = 1;
+    /*public static PIDFController xController = new PIDFController(xP, 0.0, xD, 0);
+    public static PIDFController yController = new PIDFController(yP, 0.0, yD, 0);
+    public static PIDFController hController = new PIDFController(hP, 0.0, hD, 0);*/
+
+    public static double ALLOWED_TRANSLATIONAL_ERROR = 1.25;
     public static double ALLOWED_HEADING_ERROR = 0.03;
 
     private RobotHardware robot = RobotHardware.getInstance();
@@ -43,11 +47,12 @@ public class PositionCommand extends CommandBase {
         this.drivetrain = drivetrain;
         this.localizer = localizer;
         this.targetPose = targetPose;
+
+        xController = new PIDFController(xP, 0.0, xD, 0);
+        yController = new PIDFController(yP, 0.0, yD, 0);
+        hController = new PIDFController(hP, 0.0, hD, 0);
     }
 
-    /**
-     *
-     */
     @Override
     public void execute() {
         if (timer == null) timer = new ElapsedTime();
@@ -69,7 +74,7 @@ public class PositionCommand extends CommandBase {
             stable.reset();
         }
 
-        return timer.milliseconds() > 5000 || stable.milliseconds() > 150;
+        return timer.milliseconds() > 5000 || stable.milliseconds() > 250;
     }
 
     public Pose getPower(Pose robotPose) {

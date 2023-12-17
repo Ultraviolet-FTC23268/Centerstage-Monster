@@ -19,11 +19,11 @@ public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer implements Loca
     public static double WHEEL_RADIUS = 0.689;
     public static double GEAR_RATIO = 1;
 
-    public static double PARALLEL_X = 1;
-    public static double PARALLEL_Y = 6; // 1.16442
+    public static double PARALLEL_X = 0.57;
+    public static double PARALLEL_Y = 5.928; // 1.16442
 
-    public static double PERPENDICULAR_X = 0; // -3.61212 old
-    public static double PERPENDICULAR_Y = 8;
+    public static double PERPENDICULAR_X = 0.125; // -3.61212 old
+    public static double PERPENDICULAR_Y = 4.247;
 
     private final DoubleSupplier horizontalPosition, lateralPosition, imuAngle;
 
@@ -35,7 +35,7 @@ public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer implements Loca
         ));
 
         this.horizontalPosition = () -> robot.parallelPod.getPosition();
-        this.lateralPosition = () -> robot.perpendicularPod.getPosition();
+        this.lateralPosition = () -> robot.perpindicularPod.getPosition();
         this.imuAngle = robot::getAngle;
 
     }
@@ -72,7 +72,7 @@ public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer implements Loca
     @Override
     public Pose getPos() {
         Pose2d pose = getPoseEstimate();
-        return new Pose(pose.getX(), -pose.getY(), pose.getHeading());
+        return new Pose(-pose.getX(), -pose.getY(), pose.getHeading());
     }
 
     @Override

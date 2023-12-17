@@ -7,23 +7,34 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Common.Commands.abobot.SpeedChangeCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.teleop.ClimbUpCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.teleop.EjectCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.teleop.IncrementedMoveArmCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.teleop.MoveArmCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.teleop.ResetArmCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.teleop.DisableAllCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.teleop.ScoreCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.teleop.UnscoreCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.teleop.ConditionalintakeCommand;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SlewRateLimiter;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Point;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.Localizer;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.TwoWheelLocalizer;
+import org.firstinspires.ftc.teamcode.Common.Subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
 import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.IntakeSubsystem;
-import org.firstinspires.ftc.teamcode.Common.Commands.bobot.IntakeCommand;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.LiftSubsystem;
 
 //@Photon(maximumParallelCommands = 8)
@@ -40,10 +51,11 @@ public class Teleop extends CommandOpMode {
     private SwerveDrivetrain drivetrain;
     private IntakeSubsystem intake;
     private LiftSubsystem lift;
+    private DepositSubsystem deposit;
 
     private SlewRateLimiter fw;
     private SlewRateLimiter str;
-    private final PIDFController hController = new PIDFController(0.9, 0, 0.1, 0);
+    private final PIDFController hController = new PIDFController(0.5, 0, 0.1, 0);
 
     public static double fw_r = 4;
     public static double str_r = 4;
@@ -69,49 +81,95 @@ public class Teleop extends CommandOpMode {
         drivetrain = new SwerveDrivetrain(robot);
         intake = new IntakeSubsystem(robot);
         lift = new LiftSubsystem(robot);
+        deposit = new DepositSubsystem(robot);
         gamepadEx = new GamepadEx(gamepad1);
         gamepadEx2 = new GamepadEx(gamepad2);
         localizer = new TwoWheelLocalizer(robot);
 
         robot.enabled = true;
+        robot.startIMUThread(this);
 
-        robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_2_COLOR_WAVES);
+        robot.droneLatch.setPosition(Globals.DRONE_CLOSED);
+        deposit.update(DepositSubsystem.DepositState.INTAKE);
 
-        gamepadEx.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(() -> schedule(new IntakeCommand(intake, IntakeSubsystem.IntakeState.IDLE)));
-        gamepadEx.getGamepadButton(GamepadKeys.Button.X)
-                .whenPressed(() -> schedule(new IntakeCommand(intake, IntakeSubsystem.IntakeState.INWARDS)));
+        //robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_2_COLOR_WAVES);
+
+        //GAMEPAD 1
+
+        //Intake
         gamepadEx.getGamepadButton(GamepadKeys.Button.A)
-                .whenPressed(() -> schedule(new IntakeCommand(intake, IntakeSubsystem.IntakeState.OUTWARDS)));
-        gamepadEx.getGamepadButton(GamepadKeys.Button.B)
-                .whenPressed(() -> schedule(new IntakeCommand(intake, IntakeSubsystem.IntakeState.OFF)));
+                .whenPressed(() -> schedule(new ConditionalintakeCommand(intake, lift, IntakeSubsystem.IntakeState.INWARDS)));
+        gamepadEx.getGamepadButton(GamepadKeys.Button.A)
+                .whenReleased(() -> schedule(new ConditionalintakeCommand(intake, lift, IntakeSubsystem.IntakeState.OFF)));
 
-        gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+        //Outtake
+        gamepadEx.getGamepadButton(GamepadKeys.Button.X)
+                .whenPressed(() -> schedule(new ConditionalintakeCommand(intake, lift, IntakeSubsystem.IntakeState.OUTWARDS)));
+        gamepadEx.getGamepadButton(GamepadKeys.Button.X)
+                .whenReleased(() -> schedule(new ConditionalintakeCommand(intake, lift, IntakeSubsystem.IntakeState.OFF)));
+
+        //Slowdown Drivetrain
+        gamepadEx.getGamepadButton(GamepadKeys.Button.Y)
+                .whenPressed(() -> schedule(new SpeedChangeCommand(Globals.SLOWDOWN_SPEED)));
+        gamepadEx.getGamepadButton(GamepadKeys.Button.Y)
+                .whenReleased(() -> schedule(new SpeedChangeCommand(1)));
+
+        /*gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .whenPressed(() -> robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE));
         gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
                 .whenPressed(() -> robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW));
         gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
                 .whenPressed(() -> robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN));
         gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-                .whenPressed(() -> robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.HOT_PINK));
+                .whenPressed(() -> robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.HOT_PINK));*/
 
-        /*gamepadEx2.getGamepadButton(GamepadKeys.Button.DPAD_UP)
-                .whenPressed(() -> schedule(new LiftCommand(lift, LiftSubsystem.LiftState.UPWARDS)));
-        gamepadEx2.getGamepadButton(GamepadKeys.Button.A)
-                .whenPressed(() -> schedule(new LiftCommand(lift, LiftSubsystem.LiftState.OFF)));
+        //GAMEPAD 2
+
+        //Reset Lift
+        gamepadEx2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
+                .whenPressed(() -> schedule(new ResetArmCommand(lift, deposit)));
+
+        //Max Lift
+        gamepadEx2.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
+                .whenPressed(() -> schedule(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.MAX)));
+
+        //Move Up a Row
+        gamepadEx2.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .whenPressed(() -> schedule(new IncrementedMoveArmCommand(lift, deposit, 1)));
+
+        //Move Down a Row
         gamepadEx2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-                .whenPressed(() -> schedule(new LiftCommand(lift, LiftSubsystem.LiftState.DOWNWARDS)));*/
+                .whenPressed(() -> schedule(new IncrementedMoveArmCommand(lift, deposit, -1)));
 
+        //Score
+        gamepadEx2.getGamepadButton(GamepadKeys.Button.B)
+                .whenPressed(() -> schedule(new ScoreCommand(lift, deposit)));
+        gamepadEx2.getGamepadButton(GamepadKeys.Button.B)
+                .whenReleased(() -> schedule(new SequentialCommandGroup (new UnscoreCommand(lift, deposit),
+                                                                         new WaitCommand(Globals.AUTO_RESET_DELAY),
+                                                                         new ResetArmCommand(lift, deposit))));
+
+        //Emergency Eject
         gamepadEx2.getGamepadButton(GamepadKeys.Button.X)
-                .whenPressed(() -> robot.droneMotor.setPower(1));
+                .whenPressed(() -> schedule(new EjectCommand(lift, deposit)));
+
+        //Climb
+        gamepadEx2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+                .whenPressed(() -> schedule(new ClimbUpCommand(lift, deposit)));
+
+        gamepadEx2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                .whileHeld(() -> schedule(new DisableAllCommand(robot)));
+
+        //Drone Open
         gamepadEx2.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(() -> robot.droneMotor.setPower(0));
+                .whenPressed(() -> robot.droneLatch.setPosition(Globals.DRONE_OPEN));
 
     }
 
     @Override
     public void run() {
         super.run();
+
         if (timer == null) {
             timer = new ElapsedTime();
             robot.startIMUThread(this);
@@ -131,7 +189,7 @@ public class Teleop extends CommandOpMode {
 
         if (gamepad1.right_stick_x > 0.35) {
             lock_robot_heading = true;
-            targetHeading = Math.PI/2 - SwerveDrivetrain.imuOffset;
+            targetHeading = -Math.PI/2 + SwerveDrivetrain.imuOffset;
         }
 
         if (gamepad1.right_stick_y < - 0.35) {
@@ -182,10 +240,17 @@ public class Teleop extends CommandOpMode {
         localizer.periodic();
 
         double loop = System.nanoTime();
+        Pose currentPose = localizer.getPos();
+
         telemetry.addData("hz: ", 1000000000 / (loop - loopTime));
-        telemetry.addData("target: ", lift.getTargetPos());
+        /*telemetry.addData("target: ", lift.getTargetPos());
         telemetry.addData("leftArm: ", robot.leftArmEncoder.getPosition());
         telemetry.addData("rightArm: ", robot.rightArmEncoder.getPosition());
+        telemetry.addData("parallel: ", robot.parallelPod.getPosition());
+        telemetry.addData("perpendicular: ", robot.perpindicularPod.getPosition());
+        telemetry.addData("poseX", currentPose.x);
+        telemetry.addData("poseY", currentPose.y);*/
+
         loopTime = loop;
         telemetry.update();
 
