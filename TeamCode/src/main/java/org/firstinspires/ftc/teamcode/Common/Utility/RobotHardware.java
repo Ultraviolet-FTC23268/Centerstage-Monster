@@ -26,6 +26,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.LiftSubsystem;
+import org.firstinspires.ftc.teamcode.Other.Side;
 
 import java.util.List;
 
@@ -93,7 +94,7 @@ public class RobotHardware {
 
     private HardwareMap hardwareMap;
 
-    private final double startingIMUOffset = -Math.PI/2;
+    private final double startingIMUOffset = Globals.SIDE == Side.BLUE ? -Math.PI/2: Math.PI/2;
 
     public static RobotHardware getInstance() {
         if (instance == null) {
@@ -180,6 +181,8 @@ public class RobotHardware {
         backLeftMotor.setDirection(DcMotorEx.Direction.REVERSE);
         backRightMotor.setDirection(DcMotorEx.Direction.FORWARD);
 
+        //droneLatch.setDirection(Servo.Direction.REVERSE);
+
     }
 
     public void loop(Pose drive, SwerveDrivetrain drivetrain, LiftSubsystem lift) {
@@ -205,14 +208,16 @@ public class RobotHardware {
     }
 
     public void read(SwerveDrivetrain drivetrain, LiftSubsystem lift) {
-        try {
-            drivetrain.read();
+        if(Globals.SWERVE) {
+            try {
+                drivetrain.read();
+            } catch (Exception ignored) {
+            }
+            try {
+                lift.read();
+            } catch (Exception ignored) {
+            }
         }
-        catch (Exception ignored) {}
-        try {
-            lift.read();
-        } catch (Exception ignored) {}
-
     }
 
     public void write(SwerveDrivetrain drivetrain, LiftSubsystem lift) {

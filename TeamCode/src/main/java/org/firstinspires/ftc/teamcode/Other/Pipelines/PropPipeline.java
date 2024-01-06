@@ -53,17 +53,17 @@ public class PropPipeline implements VisionProcessor, CameraStreamSource {
 
     //Wing Side
 
-    public static int WingBlueRightX = 108;
-    public static int WingBlueRightY = 175;
+    public static int WingBlueRightX = 950;
+    public static int WingBlueRightY = 85;
 
-    public static int WingBlueCenterX = 680;
-    public static int WingBlueCenterY = 120;
+    public static int WingBlueCenterX = 405;
+    public static int WingBlueCenterY = 50;
 
-    public static int WingRedLeftX = 250;
-    public static int WingRedLeftY = 250;
+    public static int WingRedLeftX = 75;
+    public static int WingRedLeftY = 165;
 
-    public static int WingRedCenterX = 250;
-    public static int WingRedCenterY = 250;
+    public static int WingRedCenterX = 645;
+    public static int WingRedCenterY = 120;
 
     public static int width = 100;
     public static int height = 100;

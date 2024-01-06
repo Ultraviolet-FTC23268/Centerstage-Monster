@@ -46,6 +46,7 @@ public class DepositSubsystem extends SubsystemBase {
     public static double deposit2Pos = 0.09;
     public static double deposit3Pos = 0.065;
     public static double retractedPos = 0.16;
+    public static double autonPos = 0;
 
 
     public static double leftOffset = 0;
@@ -68,6 +69,7 @@ public class DepositSubsystem extends SubsystemBase {
         DEPOSIT2,
         DEPOSIT3,
         RETRACTED,
+        AUTON,
     }
 
     public DepositSubsystem(RobotHardware robot) {
@@ -118,6 +120,10 @@ public class DepositSubsystem extends SubsystemBase {
             case RETRACTED:
                 robot.leftElbow.setPosition(retractedPos + leftOffset);
                 robot.rightElbow.setPosition(retractedPos + rightOffset);
+                break;
+            case AUTON:
+                robot.leftElbow.setPosition(autonPos + leftOffset);
+                robot.rightElbow.setPosition(autonPos + rightOffset);
                 break;
 
         }

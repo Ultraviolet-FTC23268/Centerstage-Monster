@@ -39,7 +39,7 @@ public class LiftSubsystem extends SubsystemBase {
     public double time = 0.0;
     public static boolean isUp = false;
 
-    public static double P = 0.0065;
+    public static double P = 0.006;
     public static double I = 0;
     public static double D = 0.00025;
     public static double F = 0;

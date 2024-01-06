@@ -12,15 +12,14 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Common.Commands.abobot.DepositCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.abobot.IntakeCommand;
-import org.firstinspires.ftc.teamcode.Common.Commands.auton.PositionCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.abobot.LiftCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.auton.swervePositionCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.teleop.MoveArmCommand;
-import org.firstinspires.ftc.teamcode.Common.Commands.teleop.ResetArmCommand;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.TwoWheelLocalizer;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;
@@ -33,10 +32,9 @@ import org.firstinspires.ftc.teamcode.Other.Pipelines.PropPipeline;
 import org.firstinspires.ftc.teamcode.Other.Side;
 import org.firstinspires.ftc.vision.VisionPortal;
 
-@Disabled
 @Config
-@Autonomous(name = "Close Blue Auto")
-public class blueCloseAuton extends CommandOpMode {
+@Autonomous(name = "Red Close Auto")
+public class safeRedCloseAuton extends CommandOpMode {
 
     private final RobotHardware robot = RobotHardware.getInstance();
     private SwerveDrivetrain drivetrain;
@@ -84,6 +82,9 @@ public class blueCloseAuton extends CommandOpMode {
     public static double stackPosX = 75;
     public static double stackPosY= 52.5;
 
+    public static double hCeOffset = 0;
+    public static double hLeOffset = 0;
+    public static double hRiOffset = 0;
 
     @Override
     public void initialize() {
@@ -142,43 +143,32 @@ public class blueCloseAuton extends CommandOpMode {
         portal.close();
 
         Pose yellowScorePos = new Pose();
-        Pose preYellowScorePos = new Pose();
         Pose purpleScorePos = new Pose();
         Pose parkPos = new Pose();
-        Pose gatePos = new Pose(gatePosX, gatePosY, Math.PI);
-        Pose preStackPos = new Pose(preStackPosX, preStackPosY, Math.PI);
-        Pose stackPos = new Pose(stackPosX, stackPosY, Math.PI);
 
-        Pose yellowScorePosH = new Pose();
         Pose preYellowScorePosH = new Pose();
-        Pose purpleScorePosH = new Pose();
-        Pose parkPosHeading = new Pose();
-
 
 
         // 0.3, 300
 
         switch (side) {
             case LEFT:
-                preYellowScorePos = new Pose(-24, 19.5,0);
-                preYellowScorePosH = new Pose(-24, 19.5, Math.PI);
-                yellowScorePos = new Pose(-32.5, 19.5, Math.PI);
-                purpleScorePos = new Pose(-16, 35, Math.PI);
-                parkPos = new Pose(-24, 5, Math.PI);
+                preYellowScorePosH = new Pose(24, 22.5, 0 + Math.toRadians(hLeOffset));
+                yellowScorePos = new Pose(32, 22.5, 0 + Math.toRadians(hLeOffset));
+                purpleScorePos = new Pose(16, 35, 0);
+                parkPos = new Pose(27.5, 5, 0);
                 break;
             case CENTER:
-                preYellowScorePos = new Pose(-24, 26.5, 0);
-                preYellowScorePosH = new Pose(-24, 26.5, Math.PI);
-                yellowScorePos = new Pose(-32.5, 26.5, Math.PI);
-                purpleScorePos = new Pose(-6, 38, Math.PI);
-                parkPos = new Pose(-24, 5, Math.PI);
+                preYellowScorePosH = new Pose(24, 29, 0 + Math.toRadians(hCeOffset));
+                yellowScorePos = new Pose(32, 29, 0 + Math.toRadians(hCeOffset));
+                purpleScorePos = new Pose(6, 38, 0);
+                parkPos = new Pose(27.5, 5, 0);
                 break;
             case RIGHT:
-                preYellowScorePos = new Pose(-24, 32.5,0);
-                preYellowScorePosH = new Pose(-24, 34, Math.PI);
-                yellowScorePos = new Pose(-33.5, 34, Math.PI);
-                purpleScorePos = new Pose(6, 32.5, Math.PI);
-                parkPos = new Pose(-24, 5, Math.PI);
+                preYellowScorePosH = new Pose(24, 34, 0 + Math.toRadians(hRiOffset));
+                yellowScorePos = new Pose(32, 34, 0 + Math.toRadians(hRiOffset));
+                purpleScorePos = new Pose(6, 32.5, 0);
+                parkPos = new Pose(27.5, 5, 0);
                 break;
             default:
                 break;
@@ -196,35 +186,29 @@ public class blueCloseAuton extends CommandOpMode {
 
                         //go to yellow scoring pos
                         new swervePositionCommand(drivetrain, localizer, yellowScorePos, 12.5)
-                                .alongWith(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW1)),
+                                .alongWith(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW2)),
 
-                        new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.DEPOSIT3)),
+                        new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.AUTON)),
                         new WaitCommand(unscoreDelay),
                         new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.HANG))
                             .andThen(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW5)),
 
+                        //Manual Arm Reset
+                        new DepositCommand(deposit, DepositSubsystem.DepositState.INTERMEDIATE)
+                                .alongWith(new LiftCommand(lift, LiftSubsystem.LiftStateReel.ROW1)),
+                        new WaitCommand(Globals.LIFT_DELAY),
+                        new DepositCommand(deposit, DepositSubsystem.DepositState.INTERMEDIATE2),
+                        new WaitCommand(Globals.FLIP_IN_DELAY),
+                        new LiftCommand(lift, LiftSubsystem.LiftStateReel.DOWN),
+                        new DepositCommand(deposit, DepositSubsystem.DepositState.INTAKE),
+
                         // go to purple pixel scoring pos
-                        new swervePositionCommand(drivetrain, localizer, purpleScorePos, 12.5)
-                            .andThen(new ResetArmCommand(lift, deposit)),
+                        new swervePositionCommand(drivetrain, localizer, purpleScorePos, 12.5),
 
                         // score purple pixel
                         new IntakeCommand(intake, IntakeSubsystem.IntakeState.AUTON_OUTWARDS)
                                 .alongWith(new WaitCommand(intakeScoreLength)),
                         new IntakeCommand(intake, IntakeSubsystem.IntakeState.OFF),
-
-
-
-                        //go to pos in front of gate
-                        new swervePositionCommand(drivetrain, localizer, gatePos, 12.5),
-
-                        //go to pre-stack pos
-                        new swervePositionCommand(drivetrain, localizer, preStackPos, 12.5),
-
-                        //go to stack pos
-                        new swervePositionCommand(drivetrain, localizer, stackPos, 12.5),
-
-                        //go back under gate
-                        new swervePositionCommand(drivetrain, localizer, gatePos, 12.5),
 
                         //go to park pos
                         new swervePositionCommand(drivetrain, localizer, parkPos, 12.5)

@@ -33,7 +33,7 @@ import org.firstinspires.ftc.teamcode.Other.Side;
 import org.firstinspires.ftc.vision.VisionPortal;
 
 @Config
-@Autonomous(name = "Safe Far Blue Auto")
+@Autonomous(name = "Blue Far Auto")
 public class safeBlueFarAuton extends CommandOpMode {
 
     private final RobotHardware robot = RobotHardware.getInstance();
@@ -55,28 +55,31 @@ public class safeBlueFarAuton extends CommandOpMode {
 
     public static int intakeScoreLength = 750;
 
-    public static double preYellowPosX = -24;
-    public static double preYellowPosY= 35;
+    public static double preYellowPosX = -75;
+    public static double preYellowPosY= 22;
     public static double preYellowPosH = Math.PI;
 
-    public static double yellowPosX = -32.5;
-    public static double yellowPosY= 35;
+    public static double yellowPosX = -86;
+    public static double yellowPosY= 22;
     public static double yellowPosH = Math.PI;
 
-    public static double purplePosX = 6;
-    public static double purplePosY= 32;
+    public static double purplePosX = -3;
+    public static double purplePosY= 30;
 
     public static double purplePosH = 0;
 
-    public static double parkPosX = -36;
-    public static double parkPosY= 5;
+    public static double parkPosX = -80;
+    public static double parkPosY= 45;
 
     public static double parkPosH = 0;
 
     public static double gatePosX = -7.5;
     public static double gatePosY= 60;
 
-    public static double crossPosX = 0;
+    public static double gatePosX2 = 15;
+    public static double gatePosY2 = 30;
+
+    public static double crossPosX = -65;
     public static double crossPosY= 60;
 
     public static double preStackPosX = 68;
@@ -92,7 +95,7 @@ public class safeBlueFarAuton extends CommandOpMode {
         CommandScheduler.getInstance().reset();
 
         Globals.COLOR = Side.BLUE;
-        Globals.SIDE = Side.LEFT;
+        Globals.SIDE = Side.RIGHT;
         Globals.USE_WHEEL_FEEDFORWARD = true;
 
         robot.init(hardwareMap, telemetry);
@@ -146,33 +149,35 @@ public class safeBlueFarAuton extends CommandOpMode {
         Pose preYellowScorePos = new Pose();
         Pose purpleScorePos = new Pose();
         Pose parkPos = new Pose();
+        Pose gatePos2 = new Pose(gatePosX2, gatePosY2, Math.PI);
         Pose gatePos = new Pose(gatePosX, gatePosY, Math.PI);
         Pose crossPos = new Pose(crossPosX, crossPosY, Math.PI);
 
         Pose preYellowScorePosH = new Pose();
 
-
-
         // 0.3, 300
 
         switch (side) {
             case LEFT:
-                preYellowScorePosH = new Pose(-24, 19.5, Math.PI);
-                yellowScorePos = new Pose(-33.5, 19.5, Math.PI);
-                purpleScorePos = new Pose(-16, 35, Math.PI);
-                parkPos = new Pose(-24, 5, Math.PI);
+                preYellowScorePosH = new Pose(-75, 24, Math.PI);
+                yellowScorePos = new Pose(-85.5, 24, Math.PI);
+                purpleScorePos = new Pose(-3, 30, 0);
+                parkPos = new Pose(-80, 45, Math.PI);
+                gatePos2 = new Pose(gatePosX2, gatePosY2, Math.PI);
                 break;
             case CENTER:
-                preYellowScorePosH = new Pose(-24, 28, Math.PI);
-                yellowScorePos = new Pose(-33.5, 28, Math.PI);
-                purpleScorePos = new Pose(-6, 38, Math.PI);
-                parkPos = new Pose(-24, 5, Math.PI);
+                preYellowScorePosH = new Pose(-75, 27.5, Math.PI);
+                yellowScorePos = new Pose(-85.5, 27.5, Math.PI);
+                purpleScorePos = new Pose(0, 46, Math.PI/2);
+                parkPos = new Pose(-80, 45, Math.PI);
+                gatePos2 = new Pose(gatePosX, gatePosY, Math.PI);
                 break;
             case RIGHT:
-                preYellowScorePosH = new Pose(preYellowPosX, preYellowPosY, Math.PI);
-                yellowScorePos = new Pose(yellowPosX, yellowPosY, Math.PI);
-                purpleScorePos = new Pose(purplePosX, purplePosY, Math.PI/2);
-                parkPos = new Pose(parkPosX, parkPosY, Math.PI);
+                preYellowScorePosH = new Pose(-75, 35, Math.PI);
+                yellowScorePos = new Pose(-85.5, 35, Math.PI);
+                purpleScorePos = new Pose(9, 40, Math.PI/2);
+                parkPos = new Pose(-80, 45, Math.PI);
+                gatePos2 = new Pose(gatePosX, gatePosY, Math.PI);
                 break;
             default:
                 break;
@@ -193,6 +198,10 @@ public class safeBlueFarAuton extends CommandOpMode {
                                 .alongWith(new WaitCommand(intakeScoreLength)),
                         new IntakeCommand(intake, IntakeSubsystem.IntakeState.OFF),
 
+                        //gate pos2
+
+                        new swervePositionCommand(drivetrain, localizer, gatePos2, 12.5),
+
                         //gate pos
                         new swervePositionCommand(drivetrain, localizer, gatePos, 12.5),
 
@@ -208,7 +217,7 @@ public class safeBlueFarAuton extends CommandOpMode {
                                 .alongWith(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW1)),
 
                         //score yellow
-                        new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.DEPOSIT3)),
+                        new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.AUTON)),
                         new WaitCommand(unscoreDelay),
                         new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.HANG))
                             .andThen(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW5)),

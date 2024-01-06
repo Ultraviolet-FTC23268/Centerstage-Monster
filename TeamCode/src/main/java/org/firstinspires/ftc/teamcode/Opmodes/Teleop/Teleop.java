@@ -164,6 +164,16 @@ public class Teleop extends CommandOpMode {
         gamepadEx2.getGamepadButton(GamepadKeys.Button.Y)
                 .whenPressed(() -> robot.droneLatch.setPosition(Globals.DRONE_OPEN));
 
+        //Drone Open
+        gamepadEx2.getGamepadButton(GamepadKeys.Button.Y)
+                .whenPressed(() -> robot.droneLatch.setPosition(Globals.DRONE_OPEN));
+
+        gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+                .whenPressed(() -> Globals.SWERVE = false);
+
+        gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .whenPressed(() -> Globals.SWERVE = true);
+
     }
 
     @Override
@@ -175,6 +185,7 @@ public class Teleop extends CommandOpMode {
             robot.startIMUThread(this);
             fw = new SlewRateLimiter(fw_r);
             str = new SlewRateLimiter(str_r);
+            robot.droneLatch.setPosition(Globals.DRONE_CLOSED);
         }
 
         robot.read(drivetrain, lift);

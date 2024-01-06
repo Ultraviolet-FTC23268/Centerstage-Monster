@@ -34,7 +34,7 @@ import org.firstinspires.ftc.teamcode.Other.Side;
 import org.firstinspires.ftc.vision.VisionPortal;
 
 @Config
-@Autonomous(name = "Safe Close Blue Auto")
+@Autonomous(name = "Blue Close Auto")
 public class safeBlueCloseAuton extends CommandOpMode {
 
     private final RobotHardware robot = RobotHardware.getInstance();
@@ -83,6 +83,9 @@ public class safeBlueCloseAuton extends CommandOpMode {
     public static double stackPosX = 75;
     public static double stackPosY= 52.5;
 
+    public static double hCeOffset = -7.5;
+    public static double hLeOffset = -5;
+    public static double hRiOffset = -5;
 
     @Override
     public void initialize() {
@@ -151,22 +154,22 @@ public class safeBlueCloseAuton extends CommandOpMode {
 
         switch (side) {
             case LEFT:
-                preYellowScorePosH = new Pose(-24, 19.5, Math.PI);
-                yellowScorePos = new Pose(-33.5, 19.5, Math.PI);
-                purpleScorePos = new Pose(-16, 35, Math.PI);
-                parkPos = new Pose(-24, 5, Math.PI);
+                preYellowScorePosH = new Pose(-24, 22.5, Math.PI + Math.toRadians(hLeOffset));
+                yellowScorePos = new Pose(-34, 22.5, Math.PI + Math.toRadians(hLeOffset));
+                purpleScorePos = new Pose(-15, 35, Math.PI);
+                parkPos = new Pose(-27.5, 5, Math.PI);
                 break;
             case CENTER:
-                preYellowScorePosH = new Pose(-24, 28, Math.PI);
-                yellowScorePos = new Pose(-33.5, 28, Math.PI);
+                preYellowScorePosH = new Pose(-24, 30, Math.PI + Math.toRadians(hCeOffset));
+                yellowScorePos = new Pose(-34, 30, Math.PI + Math.toRadians(hCeOffset));
                 purpleScorePos = new Pose(-6, 38, Math.PI);
-                parkPos = new Pose(-24, 5, Math.PI);
+                parkPos = new Pose(-27.5, 5, Math.PI);
                 break;
             case RIGHT:
-                preYellowScorePosH = new Pose(-24, 34, Math.PI);
-                yellowScorePos = new Pose(-33.5, 34, Math.PI);
+                preYellowScorePosH = new Pose(-24, 34, Math.PI + Math.toRadians(hRiOffset));
+                yellowScorePos = new Pose(-34, 34, Math.PI + Math.toRadians(hRiOffset));
                 purpleScorePos = new Pose(6, 32.5, Math.PI);
-                parkPos = new Pose(-24, 5, Math.PI);
+                parkPos = new Pose(-27.5, 5, Math.PI);
                 break;
             default:
                 break;
@@ -184,9 +187,9 @@ public class safeBlueCloseAuton extends CommandOpMode {
 
                         //go to yellow scoring pos
                         new swervePositionCommand(drivetrain, localizer, yellowScorePos, 12.5)
-                                .alongWith(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW1)),
+                                .alongWith(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW2)),
 
-                        new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.DEPOSIT3)),
+                        new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.AUTON)),
                         new WaitCommand(unscoreDelay),
                         new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.HANG))
                             .andThen(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW5)),

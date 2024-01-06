@@ -37,8 +37,8 @@ public class Globals {
     public static int MAX_POS = 1815;
     public static double LIFT_ERROR_TOLERANCE = 20;
 
-    public static double DRONE_CLOSED = 0;
-    public static double DRONE_OPEN = 0.5;
+    public static double DRONE_CLOSED = 0.65;
+    public static double DRONE_OPEN = 0.25;
 
     public static int FLIP_OUT_DELAY = 100;
 
@@ -51,6 +51,10 @@ public class Globals {
 
     public static int AUTO_RESET_DELAY = 350;
 
+    public static int FULL_READY_DELAY = 250;
+
     public static double SLOWDOWN_SPEED = 0.5;
+
+    public static boolean SWERVE = true;
 
 }

@@ -20,6 +20,7 @@ public class ResetArmCommand extends SequentialCommandGroup {
                     new DepositCommand(deposit, DepositSubsystem.DepositState.INTERMEDIATE2),
                     new WaitCommand(Globals.FLIP_IN_DELAY),
                     new LiftCommand(lift, LiftSubsystem.LiftStateReel.DOWN),
+                    new WaitCommand(Globals.FULL_READY_DELAY),
                     new DepositCommand(deposit, DepositSubsystem.DepositState.INTAKE)
             );
 
