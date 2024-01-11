@@ -31,7 +31,7 @@ public class IntakeSubsystem {
     public PIDController controller;
 
     public static double intakeMaxSpeed = -1;
-    public static double intakeInSpeed = -.66;
+    public static double intakeInSpeed = -1;
     public static double intakeOutSpeed = 1;
 
     public static double intakeOutSpeedAuton = .2;

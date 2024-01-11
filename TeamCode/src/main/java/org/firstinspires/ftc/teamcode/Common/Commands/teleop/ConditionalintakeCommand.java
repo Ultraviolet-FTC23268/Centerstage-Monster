@@ -13,11 +13,11 @@ import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
 public class ConditionalintakeCommand extends SequentialCommandGroup {
     public ConditionalintakeCommand(IntakeSubsystem intake, LiftSubsystem lift, IntakeSubsystem.IntakeState state) {
 
-        if(!lift.isUp) {
-            addCommands(
-                    new IntakeCommand(intake, state)
-            );
-        }
+        if(!lift.isUp)
+            addCommands(new IntakeCommand(intake, state));
+
+        else
+            intake.update(IntakeSubsystem.IntakeState.OFF);
 
     }
 }

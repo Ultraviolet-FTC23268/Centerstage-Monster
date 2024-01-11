@@ -68,7 +68,7 @@ public class PropPipeline implements VisionProcessor, CameraStreamSource {
     public static int width = 100;
     public static int height = 100;
 
-    public static double redThreshold = 1.55;
+    public static double redThreshold = 1.72;
     public static double blueThreshold = 0.75;
     public static double threshold = 0;
 

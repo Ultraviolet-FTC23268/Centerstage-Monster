@@ -91,8 +91,8 @@ public class safeRedCloseAuton extends CommandOpMode {
 
         CommandScheduler.getInstance().reset();
 
-        Globals.COLOR = Side.BLUE;
-        Globals.SIDE = Side.LEFT;
+        Globals.COLOR = Side.RED;
+        Globals.SIDE = Side.RIGHT;
         Globals.USE_WHEEL_FEEDFORWARD = true;
 
         robot.init(hardwareMap, telemetry);
@@ -152,22 +152,22 @@ public class safeRedCloseAuton extends CommandOpMode {
         // 0.3, 300
 
         switch (side) {
-            case LEFT:
+            case RIGHT:
                 preYellowScorePosH = new Pose(24, 22.5, 0 + Math.toRadians(hLeOffset));
-                yellowScorePos = new Pose(32, 22.5, 0 + Math.toRadians(hLeOffset));
-                purpleScorePos = new Pose(16, 35, 0);
+                yellowScorePos = new Pose(34, 22.5, 0 + Math.toRadians(hLeOffset));
+                purpleScorePos = new Pose(17, 35, 0);
                 parkPos = new Pose(27.5, 5, 0);
                 break;
             case CENTER:
                 preYellowScorePosH = new Pose(24, 29, 0 + Math.toRadians(hCeOffset));
-                yellowScorePos = new Pose(32, 29, 0 + Math.toRadians(hCeOffset));
+                yellowScorePos = new Pose(34, 29, 0 + Math.toRadians(hCeOffset));
                 purpleScorePos = new Pose(6, 38, 0);
                 parkPos = new Pose(27.5, 5, 0);
                 break;
-            case RIGHT:
+            case LEFT:
                 preYellowScorePosH = new Pose(24, 34, 0 + Math.toRadians(hRiOffset));
-                yellowScorePos = new Pose(32, 34, 0 + Math.toRadians(hRiOffset));
-                purpleScorePos = new Pose(6, 32.5, 0);
+                yellowScorePos = new Pose(34, 34, 0 + Math.toRadians(hRiOffset));
+                purpleScorePos = new Pose(-6, 32.5, 0);
                 parkPos = new Pose(27.5, 5, 0);
                 break;
             default:

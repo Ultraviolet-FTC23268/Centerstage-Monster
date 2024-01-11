@@ -88,8 +88,8 @@ public class safeRedFarAuton extends CommandOpMode {
 
         CommandScheduler.getInstance().reset();
 
-        Globals.COLOR = Side.BLUE;
-        Globals.SIDE = Side.RIGHT;
+        Globals.COLOR = Side.RED;
+        Globals.SIDE = Side.LEFT;
         Globals.USE_WHEEL_FEEDFORWARD = true;
 
         robot.init(hardwareMap, telemetry);
@@ -152,7 +152,7 @@ public class safeRedFarAuton extends CommandOpMode {
         // 0.3, 300
 
         switch (side) {
-            case LEFT:
+            case RIGHT:
                 preYellowScorePosH = new Pose(75, 24, 0);
                 yellowScorePos = new Pose(85.5, 24, 0);
                 purpleScorePos = new Pose(3, 30, 0);
@@ -166,7 +166,7 @@ public class safeRedFarAuton extends CommandOpMode {
                 parkPos = new Pose(80, 45, 0);
                 gatePos2 = new Pose(gatePosX, gatePosY, 0);
                 break;
-            case RIGHT:
+            case LEFT:
                 preYellowScorePosH = new Pose(75, 35, 0);
                 yellowScorePos = new Pose(85.5, 35, 0);
                 purpleScorePos = new Pose(9, 40, Math.PI/2);
@@ -190,8 +190,8 @@ public class safeRedFarAuton extends CommandOpMode {
                         // score purple pixel
                         new IntakeCommand(intake, IntakeSubsystem.IntakeState.AUTON_OUTWARDS)
                                 .alongWith(new WaitCommand(intakeScoreLength)),
-                        new IntakeCommand(intake, IntakeSubsystem.IntakeState.OFF),
-
+                        new IntakeCommand(intake, IntakeSubsystem.IntakeState.OFF)
+/*
                         //gate pos2
 
                         new swervePositionCommand(drivetrain, localizer, gatePos2, 12.5),
@@ -228,7 +228,7 @@ public class safeRedFarAuton extends CommandOpMode {
                         //go to park pos
                         new swervePositionCommand(drivetrain, localizer, parkPos, 12.5)
 
-
+*/
                 )
         );
     }

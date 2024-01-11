@@ -149,7 +149,7 @@ public class RobotHardware {
 
         leftElbow = hardwareMap.get(Servo.class, "leftServo");
         rightElbow = hardwareMap.get(Servo.class, "rightServo");
-        rightElbow.setDirection(Servo.Direction.REVERSE);
+        leftElbow.setDirection(Servo.Direction.REVERSE);
 
         droneLatch = hardwareMap.get(Servo.class, "droneServo");
         gateServo = hardwareMap.get(Servo.class, "gateServo");

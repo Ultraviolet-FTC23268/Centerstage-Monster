@@ -42,15 +42,15 @@ public class DepositSubsystem extends SubsystemBase {
     public static double intermediatePos = 0.7;
     public static double readyPos = 0.55;
     public static double hangPos = 0.3;
-    public static double deposit1Pos = 0.1;
-    public static double deposit2Pos = 0.09;
-    public static double deposit3Pos = 0.065;
+    public static double deposit1Pos = 0.125;
+    public static double deposit2Pos = 0.115;
+    public static double deposit3Pos = 0.0675;
     public static double retractedPos = 0.16;
     public static double autonPos = 0;
 
 
     public static double leftOffset = 0;
-    public static double rightOffset = 0.02;
+    public static double rightOffset = 0;
 
     public double time = 0.0;
 

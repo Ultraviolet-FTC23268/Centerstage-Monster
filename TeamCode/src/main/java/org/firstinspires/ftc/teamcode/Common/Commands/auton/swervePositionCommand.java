@@ -20,16 +20,16 @@ public class swervePositionCommand extends CommandBase {
     private final double v;
 
     public static double max_power = 1;
-    public static double max_heading = 1;
+    public static double max_heading = 0.5;
 
-    public static double xP = -0.0365; //0.0385
-    public static double xD = 0.005; //0.005
+    public static double xP = -0.0365;
+    public static double xD = 0.005;
 
-    public static double yP = 0.0365; //0.0385
-    public static double yD = 0.005; //0.005
+    public static double yP = 0.0365;
+    public static double yD = 0.005;
 
-    public static double hP = 0.525; //0.75
-    public static double hD = 0; //0.02
+    public static double hP = 0.5;
+    public static double hD = 0.3; //0.02
 
     //public static PIDFController xController;
     //public static PIDFController yController;
@@ -40,7 +40,7 @@ public class swervePositionCommand extends CommandBase {
     public static PIDFController hController = new PIDFController(hP, 0.0, hD, 0);
 
     public static double ALLOWED_TRANSLATIONAL_ERROR = 1.5;
-    public static double ALLOWED_HEADING_ERROR = 0.03;
+    public static double ALLOWED_HEADING_ERROR = 0.02;
 
     private RobotHardware robot = RobotHardware.getInstance();
 

@@ -22,7 +22,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-@Disabled
+//@Disabled
 @Config
 @TeleOp(name = "servoTest")
 //@Autonomous(name = "servoTest")
@@ -46,7 +46,8 @@ public class servoTest extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            robot.droneLatch.setPosition(leftPos);
+            robot.rightElbow.setPosition(rightPos);
+            robot.leftElbow.setPosition(leftPos);
 
         }
     }

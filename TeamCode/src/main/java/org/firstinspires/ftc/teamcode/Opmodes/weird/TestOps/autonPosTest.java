@@ -24,8 +24,8 @@ import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
 import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
 
 @Config
-@Autonomous(name = "PosAutoTest")
-@Disabled
+@Autonomous(name = "Auto Pos Test")
+//@Disabled
 public class autonPosTest extends CommandOpMode {
 
     private ElapsedTime timer;
@@ -80,7 +80,7 @@ public class autonPosTest extends CommandOpMode {
         CommandScheduler.getInstance().schedule(
                 new SequentialCommandGroup(
                         //new PositionCommand(drivetrain, localizer, testPos)
-                        new swervePositionCommand(drivetrain, localizer, testPos, 12.5)
+                        new swervePositionCommand(drivetrain, localizer, testPos, robot.getVoltage())
                 )
         );
     }
