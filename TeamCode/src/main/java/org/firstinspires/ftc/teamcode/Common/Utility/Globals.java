@@ -56,7 +56,7 @@ public class Globals {
     public static int FLIP_IN_DELAY = 250;
     public static int LIFT_DELAY = 800;
     public static int FLIP_AROUND_DELAY = 1000;
-    public static int LIFT_SETTLE_DELAY = 750;
+    public static int LIFT_SETTLE_DELAY = 600;
 
     //Score Delays
     public static int SCORE_DROP_DELAY = 250;

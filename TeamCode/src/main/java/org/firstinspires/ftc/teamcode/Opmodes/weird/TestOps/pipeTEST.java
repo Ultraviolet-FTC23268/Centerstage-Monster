@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.opencv.core.Scalar;
 
-//@Disabled
+@Disabled
 @Autonomous(name = "PipelineTest")
 public class pipeTEST extends LinearOpMode {
 

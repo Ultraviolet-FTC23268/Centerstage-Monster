@@ -39,8 +39,8 @@ public class DepositSubsystem extends SubsystemBase {
 
     public PIDController controller;
 
-    public static double gateOpenPos = 0.02;
-    public static double gateClosedPos = 0.22;
+    public static double gateOpenPos = 0.4;
+    public static double gateClosedPos = 0.55;
 
     public static double intakePos = 0.0225;
     public static double intermediatePos = 0.06;

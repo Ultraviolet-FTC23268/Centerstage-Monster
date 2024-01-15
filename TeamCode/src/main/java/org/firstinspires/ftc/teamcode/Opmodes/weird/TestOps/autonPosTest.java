@@ -11,6 +11,7 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Common.Commands.auton.PositionCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.auton.swervePositionCommand;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.TwoWheelLocalizer;
@@ -34,7 +35,15 @@ public class autonPosTest extends CommandOpMode {
     public static double posY = 0;
     public static double posH = 0;
 
+    public static double posX2 = 0;
+    public static double posY2 = 0;
+    public static double posH2 = 0;
+
+    public static int dead = 5000;
+    public static int dead2 = 5000;
+
     Pose testPos = new Pose();
+    Pose testPos2 = new Pose();
 
     @Override
     public void initialize() {
@@ -50,6 +59,7 @@ public class autonPosTest extends CommandOpMode {
 
         localizer.setPoseEstimate(new Pose2d(0, 0, 0));
         testPos = new Pose(posX, posY, posH);
+        testPos2 = new Pose(posX2, posY2, posH2);
 
         robot.read(drivetrain, null);
 
@@ -73,8 +83,8 @@ public class autonPosTest extends CommandOpMode {
 
         CommandScheduler.getInstance().schedule(
                 new SequentialCommandGroup(
-                        //new PositionCommand(drivetrain, localizer, testPos)
-                        new swervePositionCommand(drivetrain, localizer, testPos, robot.getVoltage())
+                        new PositionCommand(drivetrain, localizer, testPos, 0, dead, robot.getVoltage()),
+                        new PositionCommand(drivetrain, localizer, testPos2, 0, dead2, robot.getVoltage())
                 )
         );
     }
