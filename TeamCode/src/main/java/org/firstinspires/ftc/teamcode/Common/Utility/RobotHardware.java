@@ -153,6 +153,7 @@ public class RobotHardware {
 
         droneLatch = hardwareMap.get(Servo.class, "droneServo");
         gateServo = hardwareMap.get(Servo.class, "gateServo");
+        gateServo.setDirection(Servo.Direction.REVERSE);
 
         frontLeftServo.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRightServo.setDirection(DcMotorSimple.Direction.REVERSE);

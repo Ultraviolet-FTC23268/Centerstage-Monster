@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Opmodes.Autonomous;
+package org.firstinspires.ftc.teamcode.Opmodes.Autonomous.Preload;
 
 import android.util.Size;
 
@@ -33,8 +33,8 @@ import org.firstinspires.ftc.teamcode.Other.Side;
 import org.firstinspires.ftc.vision.VisionPortal;
 
 @Config
-@Autonomous(name = "Red Close Auto")
-public class safeRedCloseAuton extends CommandOpMode {
+@Autonomous(name = "Blue Close Auto")
+public class preloadBlueCloseAuton extends CommandOpMode {
 
     private final RobotHardware robot = RobotHardware.getInstance();
     private SwerveDrivetrain drivetrain;
@@ -83,16 +83,16 @@ public class safeRedCloseAuton extends CommandOpMode {
     public static double stackPosY= 52.5;
 
     public static double hCeOffset = 0;
-    public static double hLeOffset = 0;
-    public static double hRiOffset = 0;
+    public static double hLeOffset = -5;
+    public static double hRiOffset = -5;
 
     @Override
     public void initialize() {
 
         CommandScheduler.getInstance().reset();
 
-        Globals.COLOR = Side.RED;
-        Globals.SIDE = Side.RIGHT;
+        Globals.COLOR = Side.BLUE;
+        Globals.SIDE = Side.LEFT;
         Globals.USE_WHEEL_FEEDFORWARD = true;
 
         robot.init(hardwareMap, telemetry);
@@ -152,23 +152,23 @@ public class safeRedCloseAuton extends CommandOpMode {
         // 0.3, 300
 
         switch (side) {
-            case RIGHT:
-                preYellowScorePosH = new Pose(24, 22.5, 0 + Math.toRadians(hLeOffset));
-                yellowScorePos = new Pose(34, 22.5, 0 + Math.toRadians(hLeOffset));
-                purpleScorePos = new Pose(17, 35, 0);
-                parkPos = new Pose(27.5, 5, 0);
+            case LEFT:
+                preYellowScorePosH = new Pose(-24, 22.5, Math.PI + Math.toRadians(hLeOffset));
+                yellowScorePos = new Pose(-33, 22.5, Math.PI + Math.toRadians(hLeOffset));
+                purpleScorePos = new Pose(-15, 35, Math.PI);
+                parkPos = new Pose(-27.5, 5, Math.PI);
                 break;
             case CENTER:
-                preYellowScorePosH = new Pose(24, 29, 0 + Math.toRadians(hCeOffset));
-                yellowScorePos = new Pose(34, 29, 0 + Math.toRadians(hCeOffset));
-                purpleScorePos = new Pose(6, 38, 0);
-                parkPos = new Pose(27.5, 5, 0);
+                preYellowScorePosH = new Pose(-24, 27, Math.PI + Math.toRadians(hCeOffset));
+                yellowScorePos = new Pose(-33, 27, Math.PI + Math.toRadians(hCeOffset));
+                purpleScorePos = new Pose(-6, 38, Math.PI);
+                parkPos = new Pose(-27.5, 5, Math.PI);
                 break;
-            case LEFT:
-                preYellowScorePosH = new Pose(24, 34, 0 + Math.toRadians(hRiOffset));
-                yellowScorePos = new Pose(34, 34, 0 + Math.toRadians(hRiOffset));
-                purpleScorePos = new Pose(-6, 32.5, 0);
-                parkPos = new Pose(27.5, 5, 0);
+            case RIGHT:
+                preYellowScorePosH = new Pose(-24, 34, Math.PI + Math.toRadians(hRiOffset));
+                yellowScorePos = new Pose(-33, 34, Math.PI + Math.toRadians(hRiOffset));
+                purpleScorePos = new Pose(6, 32.5, Math.PI);
+                parkPos = new Pose(-27.5, 5, Math.PI);
                 break;
             default:
                 break;
@@ -181,14 +181,14 @@ public class safeRedCloseAuton extends CommandOpMode {
         CommandScheduler.getInstance().schedule(
                 new SequentialCommandGroup(
 
-                        new swervePositionCommand(drivetrain, localizer, preYellowScorePosH,12.5)
+                        new swervePositionCommand(drivetrain, localizer, preYellowScorePosH, robot.getVoltage())
                                 .alongWith(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW3)),
 
                         //go to yellow scoring pos
-                        new swervePositionCommand(drivetrain, localizer, yellowScorePos, 12.5)
+                        new swervePositionCommand(drivetrain, localizer, yellowScorePos, robot.getVoltage())
                                 .alongWith(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW2)),
 
-                        new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.AUTON)),
+                        new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.DEPOSIT)),
                         new WaitCommand(unscoreDelay),
                         new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.HANG))
                             .andThen(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW5)),
@@ -197,13 +197,13 @@ public class safeRedCloseAuton extends CommandOpMode {
                         new DepositCommand(deposit, DepositSubsystem.DepositState.INTERMEDIATE)
                                 .alongWith(new LiftCommand(lift, LiftSubsystem.LiftStateReel.ROW1)),
                         new WaitCommand(Globals.LIFT_DELAY),
-                        new DepositCommand(deposit, DepositSubsystem.DepositState.INTERMEDIATE2),
+                        new DepositCommand(deposit, DepositSubsystem.DepositState.DEPOSIT),
                         new WaitCommand(Globals.FLIP_IN_DELAY),
                         new LiftCommand(lift, LiftSubsystem.LiftStateReel.DOWN),
                         new DepositCommand(deposit, DepositSubsystem.DepositState.INTAKE),
 
                         // go to purple pixel scoring pos
-                        new swervePositionCommand(drivetrain, localizer, purpleScorePos, 12.5),
+                        new swervePositionCommand(drivetrain, localizer, purpleScorePos, robot.getVoltage()),
 
                         // score purple pixel
                         new IntakeCommand(intake, IntakeSubsystem.IntakeState.AUTON_OUTWARDS)
@@ -211,8 +211,7 @@ public class safeRedCloseAuton extends CommandOpMode {
                         new IntakeCommand(intake, IntakeSubsystem.IntakeState.OFF),
 
                         //go to park pos
-                        new swervePositionCommand(drivetrain, localizer, parkPos, 12.5)
-
+                        new swervePositionCommand(drivetrain, localizer, parkPos, robot.getVoltage())
 
                 )
         );

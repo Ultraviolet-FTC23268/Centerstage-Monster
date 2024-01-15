@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.Common.Subsystems.IntakeSubsystem;
 
 import org.firstinspires.ftc.teamcode.Common.Commands.abobot.IntakeCommand;
 
-import org.firstinspires.ftc.teamcode.Common.Commands.auton.PositionCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.auton.MecPositionCommand;
 
 import org.firstinspires.ftc.teamcode.Common.Subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.Other.Pipelines.PropPipeline;
@@ -187,12 +187,12 @@ public class blueAutonOld extends CommandOpMode {
                 new SequentialCommandGroup(
 
                         //go to pre yellow pos
-                        new PositionCommand(drivetrain, localizer, preYellowScorePos)
+                        new MecPositionCommand(drivetrain, localizer, preYellowScorePos)
                                 .alongWith(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW2)),
-                        new PositionCommand(drivetrain, localizer, preYellowScorePosH),
+                        new MecPositionCommand(drivetrain, localizer, preYellowScorePosH),
 
                         //go to yellow scoring pos
-                        new PositionCommand(drivetrain, localizer, yellowScorePos)
+                        new MecPositionCommand(drivetrain, localizer, yellowScorePos)
                                 .alongWith(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW1)),
 
                         //score yellow
@@ -201,15 +201,15 @@ public class blueAutonOld extends CommandOpMode {
                                 .alongWith(new WaitCommand(unscoreDelay)),
                         new UnscoreCommand(lift, deposit),*/
 
-                        new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.DEPOSIT3))
-                                .alongWith(new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.DEPOSIT3))),
+                        new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.DEPOSIT))
+                                .alongWith(new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.DEPOSIT))),
                         new WaitCommand(unscoreDelay),
                         new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.HANG))
                                 .alongWith(new InstantCommand(() -> new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW3)),
                         new WaitCommand(750),
 
                         // go to purple pixel scoring pos
-                        new PositionCommand(drivetrain, localizer, purpleScorePos)
+                        new MecPositionCommand(drivetrain, localizer, purpleScorePos)
                                 .alongWith(new ResetArmCommand(lift, deposit))),
 
                         // score purple pixel
@@ -219,8 +219,8 @@ public class blueAutonOld extends CommandOpMode {
                         //new InstantCommand(() -> score da yellow),
 
                         //go to park pos
-                        new PositionCommand(drivetrain, localizer, parkPos),
-                        new PositionCommand(drivetrain, localizer, parkPos2),
+                        new MecPositionCommand(drivetrain, localizer, parkPos),
+                        new MecPositionCommand(drivetrain, localizer, parkPos2),
                         new ResetArmCommand(lift, deposit)
 
                 )

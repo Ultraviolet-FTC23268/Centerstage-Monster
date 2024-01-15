@@ -22,39 +22,53 @@ public class Globals {
     public static boolean USE_WHEEL_FEEDFORWARD = true;
 
     public static boolean SWERVE_X = false;
-    public static int DOWN_POS = 0;
-    public static int ROW1_POS = 150;
-    public static int ROW2_POS = 300;
-    public static int ROW3_POS = 450;
-    public static int ROW4_POS = 600;
-    public static int ROW5_POS = 750;
-    public static int ROW6_POS = 900;
-    public static int ROW7_POS = 1050;
-    public static int ROW8_POS = 1200;
-    public static int ROW9_POS = 1350;
-    public static int ROW10_POS = 1500;
-    public static int ROW11_POS = 1650;
-    public static int MAX_POS = 1815;
-    public static double LIFT_ERROR_TOLERANCE = 20;
 
+    //Lift Positions
+    public static int DOWN_POS = 0;
+    public static int ROW1_POS = 675;
+    public static int ROW2_POS = 900;
+    public static int ROW3_POS = 1100;
+    public static int ROW4_POS = 1375;
+    public static int ROW5_POS = 1675;
+    public static int ROW6_POS = 1860;
+    public static int ROW7_POS = 1860;
+    public static int ROW8_POS = 1860;
+    public static int ROW9_POS = 1860;
+    public static int ROW10_POS = 1860;
+    public static int ROW11_POS = 1860;
+    public static int MAX_POS = 1860;
+
+    public static int SWING_IN_POS = 325;
+    public static double LIFT_ERROR_TOLERANCE = 20;
+    public static int LIFT_RESET_OFFSET = 150;
+
+    //Drone Positions
     public static double DRONE_CLOSED = 0.65;
     public static double DRONE_OPEN = 0.25;
 
+    //Move Arm Delays
     public static int FLIP_OUT_DELAY = 100;
 
-    public static int FLIP_IN_DELAY = 150;
-    public static int RETRACTION_DELAY = 250;
-    public static int RESET_DELAY = 350;
+    //Eject Delays
     public static int EJECT_DELAY = 500;
 
-    public static int LIFT_DELAY = 500;
+    //Reset Arm Delays
+    public static int FLIP_IN_DELAY = 250;
+    public static int LIFT_DELAY = 800;
+    public static int FLIP_AROUND_DELAY = 1000;
+    public static int LIFT_SETTLE_DELAY = 750;
 
-    public static int AUTO_RESET_DELAY = 350;
+    //Score Delays
+    public static int SCORE_DROP_DELAY = 250;
 
-    public static int FULL_READY_DELAY = 250;
+    //Unscore Delays
+    public static int RESET_DELAY = 350;
 
+    //Intake Delays
+    public static int OUTTAKE_DELAY = 1000;
+
+    //Swerve Stuff
     public static double SLOWDOWN_SPEED = 0.5;
-
     public static boolean SWERVE = true;
 
 }

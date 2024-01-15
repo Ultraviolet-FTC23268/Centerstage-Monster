@@ -33,24 +33,24 @@ public class DepositSubsystem extends SubsystemBase {
 
     public DepositState depositState = DepositState.INTAKE;
 
+    public DepositSubsystem.GateState gateState = DepositSubsystem.GateState.OPEN;
+
     private final ElapsedTime timer;
 
     public PIDController controller;
 
-    public static double intermediate2Pos = 0.77;
-    public static double intakePos = 0.72;
-    public static double intermediatePos = 0.7;
-    public static double readyPos = 0.55;
-    public static double hangPos = 0.3;
-    public static double deposit1Pos = 0.125;
-    public static double deposit2Pos = 0.115;
-    public static double deposit3Pos = 0.0675;
-    public static double retractedPos = 0.16;
-    public static double autonPos = 0;
+    public static double gateOpenPos = 0.02;
+    public static double gateClosedPos = 0.22;
+
+    public static double intakePos = 0.0225;
+    public static double intermediatePos = 0.06;
+    public static double hangPos = 0.5;
+    public static double depositPos = 0.87;
+    public static double retractedPos = 0.01;
 
 
     public static double leftOffset = 0;
-    public static double rightOffset = 0;
+    public static double rightOffset = 0.01;
 
     public double time = 0.0;
 
@@ -62,14 +62,14 @@ public class DepositSubsystem extends SubsystemBase {
     public enum DepositState {
         INTAKE,
         INTERMEDIATE,
-        INTERMEDIATE2,
-        READY,
         HANG,
-        DEPOSIT1,
-        DEPOSIT2,
-        DEPOSIT3,
+        DEPOSIT,
         RETRACTED,
-        AUTON,
+    }
+
+    public enum GateState {
+        CLOSED,
+        OPEN
     }
 
     public DepositSubsystem(RobotHardware robot) {
@@ -93,37 +93,33 @@ public class DepositSubsystem extends SubsystemBase {
                 robot.leftElbow.setPosition(intermediatePos + leftOffset);
                 robot.rightElbow.setPosition(intermediatePos + rightOffset);
                 break;
-            case INTERMEDIATE2:
-                robot.leftElbow.setPosition(intermediate2Pos + leftOffset);
-                robot.rightElbow.setPosition(intermediate2Pos + rightOffset);
-                break;
-            case READY:
-                robot.leftElbow.setPosition(readyPos + leftOffset);
-                robot.rightElbow.setPosition(readyPos + rightOffset);
-                break;
             case HANG:
                 robot.leftElbow.setPosition(hangPos + leftOffset);
                 robot.rightElbow.setPosition(hangPos + rightOffset);
                 break;
-            case DEPOSIT1:
-                robot.leftElbow.setPosition(deposit1Pos + leftOffset);
-                robot.rightElbow.setPosition(deposit1Pos + rightOffset);
-                break;
-            case DEPOSIT2:
-                robot.leftElbow.setPosition(deposit2Pos + leftOffset);
-                robot.rightElbow.setPosition(deposit2Pos + rightOffset);
-                break;
-            case DEPOSIT3:
-                robot.leftElbow.setPosition(deposit3Pos + leftOffset);
-                robot.rightElbow.setPosition(deposit3Pos + rightOffset);
+            case DEPOSIT:
+                robot.leftElbow.setPosition(depositPos + leftOffset);
+                robot.rightElbow.setPosition(depositPos + rightOffset);
                 break;
             case RETRACTED:
                 robot.leftElbow.setPosition(retractedPos + leftOffset);
                 robot.rightElbow.setPosition(retractedPos + rightOffset);
                 break;
-            case AUTON:
-                robot.leftElbow.setPosition(autonPos + leftOffset);
-                robot.rightElbow.setPosition(autonPos + rightOffset);
+
+        }
+
+    }
+
+    public void update(GateState state) {
+
+        gateState = state;
+        switch (state) {
+
+            case CLOSED:
+                robot.gateServo.setPosition(gateClosedPos);
+                break;
+            case OPEN:
+                robot.gateServo.setPosition(gateOpenPos);
                 break;
 
         }

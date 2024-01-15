@@ -29,7 +29,7 @@ public class LiftSubsystem extends SubsystemBase {
     public int rightLiftPos;
     public double power = 0.0;
 
-    public static int rowPos = 4;
+    public static int rowPos = 1;
     public static int targetPosition = 0;
     public static double liftRaiseSpeed = 1;
     public static double liftLowerSpeed = -1;
@@ -39,9 +39,9 @@ public class LiftSubsystem extends SubsystemBase {
     public double time = 0.0;
     public static boolean isUp = false;
 
-    public static double P = 0.006;
+    public static double P = 0.0075;
     public static double I = 0;
-    public static double D = 0.00025;
+    public static double D = 0.0003;
     public static double F = 0;
 
     public enum LiftStateReel {

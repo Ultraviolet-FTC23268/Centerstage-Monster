@@ -30,6 +30,7 @@ public class servoTest extends LinearOpMode {
 
     public static double leftPos = 0;
     public static double rightPos = 0;
+    public static double gatePos = 0;
 
     private final RobotHardware robot = RobotHardware.getInstance();
 
@@ -48,6 +49,7 @@ public class servoTest extends LinearOpMode {
 
             robot.rightElbow.setPosition(rightPos);
             robot.leftElbow.setPosition(leftPos);
+            robot.gateServo.setPosition(gatePos);
 
         }
     }

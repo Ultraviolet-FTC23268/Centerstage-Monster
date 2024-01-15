@@ -4,6 +4,7 @@ import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.Common.Commands.abobot.DepositCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.abobot.GateCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.abobot.LiftCommand;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.LiftSubsystem;
@@ -14,11 +15,12 @@ public class EjectCommand extends SequentialCommandGroup {
 
         if(!lift.isUp)
             addCommands(
-                new LiftCommand(lift, LiftSubsystem.LiftStateReel.ROW3),
-                new WaitCommand(Globals.FLIP_OUT_DELAY),
-                new DepositCommand(deposit, DepositSubsystem.DepositState.DEPOSIT1),
-                new WaitCommand(Globals.EJECT_DELAY),
-                new ResetArmCommand(lift, deposit)
+                    new LiftCommand(lift, LiftSubsystem.LiftStateReel.ROW1),
+                    new WaitCommand(Globals.FLIP_OUT_DELAY),
+                    new DepositCommand(deposit, DepositSubsystem.DepositState.DEPOSIT),
+                    new WaitCommand(Globals.EJECT_DELAY),
+                    new GateCommand(deposit, DepositSubsystem.GateState.OPEN),
+                    new ResetArmCommand(lift, deposit)
             );
 
     }

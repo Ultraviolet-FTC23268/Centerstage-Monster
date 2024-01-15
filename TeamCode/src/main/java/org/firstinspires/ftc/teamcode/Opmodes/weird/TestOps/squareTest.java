@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 
-import org.firstinspires.ftc.teamcode.Common.Commands.auton.PositionCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.auton.MecPositionCommand;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.TwoWheelLocalizer;
 import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
@@ -98,8 +98,8 @@ public class squareTest extends CommandOpMode {
         telemetry.addData("x", localizer.getPos().x);
         telemetry.addData("y", localizer.getPos().y);
         telemetry.addData("h", localizer.getPos().heading);
-        telemetry.addData("xP", PositionCommand.xP);
-        telemetry.addData("xD", PositionCommand.xD);
+        telemetry.addData("xP", MecPositionCommand.xP);
+        telemetry.addData("xD", MecPositionCommand.xD);
         telemetry.addData("t", drivetrain.frontLeftModule.getTargetRotation());
         telemetry.addData("c", drivetrain.frontLeftModule.getModuleRotation());
         loopTime = loop;

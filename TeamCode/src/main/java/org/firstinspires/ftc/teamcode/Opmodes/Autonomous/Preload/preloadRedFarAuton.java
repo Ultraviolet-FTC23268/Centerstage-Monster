@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Opmodes.Autonomous;
+package org.firstinspires.ftc.teamcode.Opmodes.Autonomous.Preload;
 
 import android.util.Size;
 
@@ -8,19 +8,14 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Common.Commands.abobot.DepositCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.abobot.IntakeCommand;
-import org.firstinspires.ftc.teamcode.Common.Commands.abobot.LiftCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.auton.swervePositionCommand;
-import org.firstinspires.ftc.teamcode.Common.Commands.teleop.MoveArmCommand;
-import org.firstinspires.ftc.teamcode.Common.Commands.teleop.ResetArmCommand;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.TwoWheelLocalizer;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;
@@ -34,8 +29,8 @@ import org.firstinspires.ftc.teamcode.Other.Side;
 import org.firstinspires.ftc.vision.VisionPortal;
 
 @Config
-@Autonomous(name = "Blue Close Auto")
-public class safeBlueCloseAuton extends CommandOpMode {
+@Autonomous(name = "Red Far Auto")
+public class preloadRedFarAuton extends CommandOpMode {
 
     private final RobotHardware robot = RobotHardware.getInstance();
     private SwerveDrivetrain drivetrain;
@@ -56,43 +51,40 @@ public class safeBlueCloseAuton extends CommandOpMode {
 
     public static int intakeScoreLength = 750;
 
-    public static double preYellowPosX = -24;
-    public static double preYellowPosY= 35;
+    public static double preYellowPosX = -75;
+    public static double preYellowPosY= 22;
     public static double preYellowPosH = Math.PI;
 
-    public static double yellowPosX = -32.5;
-    public static double yellowPosY= 35;
+    public static double yellowPosX = -86;
+    public static double yellowPosY= 22;
     public static double yellowPosH = Math.PI;
 
-    public static double purplePosX = 6;
-    public static double purplePosY= 32;
+    public static double purplePosX = -3;
+    public static double purplePosY= 30;
 
     public static double purplePosH = 0;
 
-    public static double parkPosX = -36;
-    public static double parkPosY= 5;
+    public static double parkPosX = -80;
+    public static double parkPosY= 45;
 
     public static double parkPosH = 0;
 
-    public static double gatePosX = -7.5;
+    public static double gatePosX = 7.5;
     public static double gatePosY= 60;
 
-    public static double preStackPosX = 68;
-    public static double preStackPosY= 60;
+    public static double gatePosX2 = -15;
+    public static double gatePosY2 = 30;
 
-    public static double stackPosX = 75;
-    public static double stackPosY= 52.5;
+    public static double crossPosX = 65;
+    public static double crossPosY= 60;
 
-    public static double hCeOffset = 0;
-    public static double hLeOffset = -5;
-    public static double hRiOffset = -5;
 
     @Override
     public void initialize() {
 
         CommandScheduler.getInstance().reset();
 
-        Globals.COLOR = Side.BLUE;
+        Globals.COLOR = Side.RED;
         Globals.SIDE = Side.LEFT;
         Globals.USE_WHEEL_FEEDFORWARD = true;
 
@@ -144,32 +136,38 @@ public class safeBlueCloseAuton extends CommandOpMode {
         portal.close();
 
         Pose yellowScorePos = new Pose();
+        Pose preYellowScorePos = new Pose();
         Pose purpleScorePos = new Pose();
         Pose parkPos = new Pose();
+        Pose gatePos2 = new Pose(gatePosX2, gatePosY2, 0);
+        Pose gatePos = new Pose(gatePosX, gatePosY, 0);
+        Pose crossPos = new Pose(crossPosX, crossPosY, 0);
 
         Pose preYellowScorePosH = new Pose();
-
 
         // 0.3, 300
 
         switch (side) {
-            case LEFT:
-                preYellowScorePosH = new Pose(-24, 22.5, Math.PI + Math.toRadians(hLeOffset));
-                yellowScorePos = new Pose(-33, 22.5, Math.PI + Math.toRadians(hLeOffset));
-                purpleScorePos = new Pose(-15, 35, Math.PI);
-                parkPos = new Pose(-27.5, 5, Math.PI);
+            case RIGHT:
+                preYellowScorePosH = new Pose(75, 24, 0);
+                yellowScorePos = new Pose(85.5, 24, 0);
+                purpleScorePos = new Pose(3, 30, 0);
+                parkPos = new Pose(80, 45, 0);
+                gatePos2 = new Pose(gatePosX2, gatePosY2, 0);
                 break;
             case CENTER:
-                preYellowScorePosH = new Pose(-24, 27, Math.PI + Math.toRadians(hCeOffset));
-                yellowScorePos = new Pose(-33, 27, Math.PI + Math.toRadians(hCeOffset));
-                purpleScorePos = new Pose(-6, 38, Math.PI);
-                parkPos = new Pose(-27.5, 5, Math.PI);
+                preYellowScorePosH = new Pose(75, 27.5, 0);
+                yellowScorePos = new Pose(85.5, 27.5, 0);
+                purpleScorePos = new Pose(0, 46, Math.PI/2);
+                parkPos = new Pose(80, 45, 0);
+                gatePos2 = new Pose(gatePosX, gatePosY, 0);
                 break;
-            case RIGHT:
-                preYellowScorePosH = new Pose(-24, 34, Math.PI + Math.toRadians(hRiOffset));
-                yellowScorePos = new Pose(-33, 34, Math.PI + Math.toRadians(hRiOffset));
-                purpleScorePos = new Pose(6, 32.5, Math.PI);
-                parkPos = new Pose(-27.5, 5, Math.PI);
+            case LEFT:
+                preYellowScorePosH = new Pose(75, 35, 0);
+                yellowScorePos = new Pose(85.5, 35, 0);
+                purpleScorePos = new Pose(9, 40, Math.PI/2);
+                parkPos = new Pose(80, 45, 0);
+                gatePos2 = new Pose(gatePosX, gatePosY, 0);
                 break;
             default:
                 break;
@@ -182,13 +180,33 @@ public class safeBlueCloseAuton extends CommandOpMode {
         CommandScheduler.getInstance().schedule(
                 new SequentialCommandGroup(
 
-                        new swervePositionCommand(drivetrain, localizer, preYellowScorePosH, robot.getVoltage())
+                        // go to purple pixel scoring pos
+                        new swervePositionCommand(drivetrain, localizer, purpleScorePos, 12.5),
+
+                        // score purple pixel
+                        new IntakeCommand(intake, IntakeSubsystem.IntakeState.AUTON_OUTWARDS)
+                                .alongWith(new WaitCommand(intakeScoreLength)),
+                        new IntakeCommand(intake, IntakeSubsystem.IntakeState.OFF)
+/*
+                        //gate pos2
+
+                        new swervePositionCommand(drivetrain, localizer, gatePos2, 12.5),
+
+                        //gate pos
+                        new swervePositionCommand(drivetrain, localizer, gatePos, 12.5),
+
+                        //after gate pos
+                        new swervePositionCommand(drivetrain, localizer, crossPos, 12.5),
+
+                        //pre yellow pos
+                        new swervePositionCommand(drivetrain, localizer, preYellowScorePosH,12.5)
                                 .alongWith(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW3)),
 
                         //go to yellow scoring pos
-                        new swervePositionCommand(drivetrain, localizer, yellowScorePos, robot.getVoltage())
-                                .alongWith(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW2)),
+                        new swervePositionCommand(drivetrain, localizer, yellowScorePos, 12.5)
+                                .alongWith(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW1)),
 
+                        //score yellow
                         new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.AUTON)),
                         new WaitCommand(unscoreDelay),
                         new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.HANG))
@@ -203,17 +221,10 @@ public class safeBlueCloseAuton extends CommandOpMode {
                         new LiftCommand(lift, LiftSubsystem.LiftStateReel.DOWN),
                         new DepositCommand(deposit, DepositSubsystem.DepositState.INTAKE),
 
-                        // go to purple pixel scoring pos
-                        new swervePositionCommand(drivetrain, localizer, purpleScorePos, robot.getVoltage()),
-
-                        // score purple pixel
-                        new IntakeCommand(intake, IntakeSubsystem.IntakeState.AUTON_OUTWARDS)
-                                .alongWith(new WaitCommand(intakeScoreLength)),
-                        new IntakeCommand(intake, IntakeSubsystem.IntakeState.OFF),
-
                         //go to park pos
-                        new swervePositionCommand(drivetrain, localizer, parkPos, robot.getVoltage())
+                        new swervePositionCommand(drivetrain, localizer, parkPos, 12.5)
 
+*/
                 )
         );
     }

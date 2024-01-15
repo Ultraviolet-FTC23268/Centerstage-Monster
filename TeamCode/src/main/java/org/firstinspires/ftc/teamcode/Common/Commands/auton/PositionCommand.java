@@ -1,52 +1,71 @@
 package org.firstinspires.ftc.teamcode.Common.Commands.auton;
 
+import androidx.core.math.MathUtils;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.Drivetrain;
-import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.Localizer;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
-import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
+import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.Localizer;
+import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
 
 @Config
 public class PositionCommand extends CommandBase {
-    Localizer localizer;
-    Drivetrain drivetrain;
-    public Pose targetPose;
+    public static double ALLOWED_TRANSLATIONAL_ERROR = 0.25;
+    public static double ALLOWED_HEADING_ERROR = Math.toRadians(1);
 
-    public static double xP = 0.0385; //0.0385
-    public static double xD = 0.00; //0.005
+    public static double xP = -0.0365;
+    public static double xD = 0.005;
+    public static double xF = 0;
 
-    public static double yP = 0.0385; //0.0385
-    public static double yD = 0.00; //0.005
+    public static double yP = 0.0365;
+    public static double yD = 0.005;
+    public static double yF = 0;
 
-    public static double hP = 0.575; //0.75
-    public static double hD = 0.1; //0.02
-
-    public static double kStatic = 0.05;
+    public static double hP = 0.575;
+    public static double hD = 0.1;
+    public static double hF = 0;
 
     public static PIDFController xController;
     public static PIDFController yController;
     public static PIDFController hController;
+    public static double max_power = 1;
+    public static double max_heading = 0.5;
 
-    /*public static PIDFController xController = new PIDFController(xP, 0.0, xD, 0);
-    public static PIDFController yController = new PIDFController(yP, 0.0, yD, 0);
-    public static PIDFController hController = new PIDFController(hP, 0.0, hD, 0);*/
+    Drivetrain drivetrain;
+    Localizer localizer;
+    Pose targetPose;
+    ElapsedTime deadTimer;
 
-    public static double ALLOWED_TRANSLATIONAL_ERROR = 1.25;
-    public static double ALLOWED_HEADING_ERROR = 0.03;
+    private final double ms;
+    private final double delay;
+    private ElapsedTime delayTimer;
 
-    private RobotHardware robot = RobotHardware.getInstance();
+    private final double v;
 
-    private ElapsedTime timer;
-    private ElapsedTime stable;
-
-    public PositionCommand(Drivetrain drivetrain, Localizer localizer, Pose targetPose) {
+    public PositionCommand(Drivetrain drivetrain, Localizer localizer, Pose targetPose, double delay, double dead, double voltage) {
         this.drivetrain = drivetrain;
         this.localizer = localizer;
         this.targetPose = targetPose;
+        this.ms = dead;
+        this.delay = delay;
+        this.v = voltage;
+
+        xController = new PIDFController(xP, 0.0, xD, 0);
+        yController = new PIDFController(yP, 0.0, yD, 0);
+        hController = new PIDFController(hP, 0.0, hD, 0);
+    }
+
+    public PositionCommand(Drivetrain drivetrain, Localizer localizer, Pose targetPose, double delay, double voltage) {
+        this.drivetrain = drivetrain;
+        this.localizer = localizer;
+        this.targetPose = targetPose;
+        this.ms = Integer.MAX_VALUE;
+        this.delay = delay;
+        this.v = voltage;
 
         xController = new PIDFController(xP, 0.0, xD, 0);
         yController = new PIDFController(yP, 0.0, yD, 0);
@@ -54,51 +73,65 @@ public class PositionCommand extends CommandBase {
     }
 
     @Override
+    public void initialize(){
+        Globals.USE_WHEEL_FEEDFORWARD = true;
+    }
+
+    @Override
     public void execute() {
-        if (timer == null) timer = new ElapsedTime();
-        if (stable == null) stable = new ElapsedTime();
+        if (deadTimer == null) {
+            deadTimer = new ElapsedTime();
+        }
 
-        Pose robotPose = localizer.getPos();
-
-        Pose powers = getPower(robotPose);
+        Pose powers = goToPosition(localizer.getPos(), targetPose);
         drivetrain.set(powers);
     }
 
     @Override
     public boolean isFinished() {
-        Pose robotPose = localizer.getPos();
-        Pose delta = targetPose.subtract(robotPose);
+        Pose error = targetPose.subtract(localizer.getPos());
 
-        if (delta.toVec2D().magnitude() > ALLOWED_TRANSLATIONAL_ERROR
-                || Math.abs(delta.heading) > ALLOWED_HEADING_ERROR) {
-            stable.reset();
+        boolean reached = ((Math.hypot(error.x, error.y) < ALLOWED_TRANSLATIONAL_ERROR) && (Math.abs(error.heading) < ALLOWED_HEADING_ERROR));
+
+        if (reached && delayTimer == null) {
+            delayTimer = new ElapsedTime();
+        }
+        if (!reached && delayTimer != null) {
+            delayTimer.reset();
         }
 
-        return timer.milliseconds() > 5000 || stable.milliseconds() > 250;
-    }
-
-    public Pose getPower(Pose robotPose) {
-        Pose delta = targetPose.subtract(robotPose);
-
-        double xPower = xController.calculate(robotPose.x, targetPose.x);
-        double yPower = yController.calculate(robotPose.y, targetPose.y);
-        double hPower = -hController.calculate(0, delta.heading);
-
-        double x_rotated = xPower * Math.cos(robotPose.heading) - yPower * Math.sin(robotPose.heading);
-        double y_rotated = xPower * Math.sin(robotPose.heading) + yPower * Math.cos(robotPose.heading);
-
-        if (Math.abs(x_rotated) < 0.01) x_rotated = 0;
-        else x_rotated += kStatic * Math.signum(x_rotated);
-        if (Math.abs(y_rotated) < 0.01) y_rotated = 0;
-        else y_rotated += kStatic * Math.signum(y_rotated);
-        if (Math.abs(hPower) < 0.01) hPower = 0;
-        else hPower += kStatic * Math.signum(hPower);
-
-        return new Pose((y_rotated / robot.getVoltage() * 12.5) *1.6, x_rotated / robot.getVoltage() * 12.5, hPower / robot.getVoltage() * 12.5);
+        boolean delayed = delayTimer != null && delayTimer.milliseconds() > delay;
+        return (deadTimer.milliseconds() > ms) || delayed;
     }
 
     @Override
     public void end(boolean interrupted) {
         drivetrain.set(new Pose());
+        Globals.USE_WHEEL_FEEDFORWARD = false;
+    }
+
+    private static Pose relDistanceToTarget(Pose robot, Pose target) {
+        return target.subtract(robot);
+    }
+
+    public Pose goToPosition(Pose robotPose, Pose targetPose) {
+        Pose deltaPose = relDistanceToTarget(robotPose, targetPose);
+        Pose powers = new Pose(
+                xController.calculate(0, deltaPose.x),
+                yController.calculate(0, deltaPose.y),
+                hController.calculate(0, deltaPose.heading)
+        );
+        double x_rotated = powers.x * Math.cos(robotPose.heading) - powers.y * Math.sin(robotPose.heading);
+        double y_rotated = powers.x * Math.sin(robotPose.heading) + powers.y * Math.cos(robotPose.heading);
+        double x_power = -x_rotated < -max_power ? -max_power :
+                Math.min(-x_rotated, max_power);
+        double y_power = -y_rotated < -max_power ? -max_power :
+                Math.min(-y_rotated, max_power);
+        double heading_power = MathUtils.clamp(powers.heading, -max_heading, max_heading);
+
+        if(Math.abs(x_power) < 0.01) x_power = 0;
+        if(Math.abs(y_power) < 0.01) y_power = 0;
+
+        return new Pose(-y_power / v * 12, x_power / v * 12, -heading_power / v * 12);
     }
 }

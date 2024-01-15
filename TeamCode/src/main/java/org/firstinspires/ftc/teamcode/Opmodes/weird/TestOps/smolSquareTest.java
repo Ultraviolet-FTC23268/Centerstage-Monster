@@ -11,7 +11,6 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
@@ -19,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.TwoWheelLocali
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
 import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
-import org.firstinspires.ftc.teamcode.Common.Commands.auton.PositionCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.auton.MecPositionCommand;
 
 //@Photon
 @Config
@@ -85,8 +84,8 @@ public class smolSquareTest extends CommandOpMode {
                 .whenPressed(() -> schedule(new SequentialCommandGroup(
                         //1
 
-                        new PositionCommand(drivetrain, localizer, new Pose(24, 0, Math.toRadians(0))),
-                        new PositionCommand(drivetrain, localizer, new Pose(24, 0, Math.toRadians(90)))
+                        new MecPositionCommand(drivetrain, localizer, new Pose(24, 0, Math.toRadians(0))),
+                        new MecPositionCommand(drivetrain, localizer, new Pose(24, 0, Math.toRadians(90)))
                         /*new PositionCommand(drivetrain, localizer, new Pose(24, -24, Math.toRadians(90)), 0, 12.5),
                         new PositionCommand(drivetrain, localizer, new Pose(24, -24, Math.toRadians(180)), 0, 12.5),
                         new PositionCommand(drivetrain, localizer, new Pose(0, -24, Math.toRadians(180)), 0, 12.5),
@@ -191,7 +190,7 @@ public class smolSquareTest extends CommandOpMode {
         telemetry.addData("y", localizer.getPos().y);
         telemetry.addData("h", localizer.getPos().heading);
         //telemetry.addData("xP", PositionCommand.get);
-        telemetry.addData("xD", PositionCommand.xD);
+        telemetry.addData("xD", MecPositionCommand.xD);
         telemetry.addData("Ct:", count);
         //telemetry.addData("t", drivetrain.frontLeftModule.getTargetRotation());
         //telemetry.addData("c", drivetrain.frontLeftModule.getModuleRotation());

@@ -8,19 +8,13 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Common.Commands.auton.KbPositionCommand;
-import org.firstinspires.ftc.teamcode.Common.Commands.auton.PositionCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.auton.swervePositionCommand;
-import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.Drivetrain;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.TwoWheelLocalizer;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
-import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
 import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
 
 @Config

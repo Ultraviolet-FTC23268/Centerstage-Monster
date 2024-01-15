@@ -12,8 +12,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Common.Commands.auton.PositionCommand;
-import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Vector2D;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.TwoWheelLocalizer;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;

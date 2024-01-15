@@ -15,7 +15,7 @@ public class UnscoreCommand extends SequentialCommandGroup {
             addCommands(
                 new DepositCommand(deposit, DepositSubsystem.DepositState.RETRACTED),
                 new WaitCommand(Globals.RESET_DELAY),
-                new DepositCommand(deposit, DepositSubsystem.DepositState.READY)
+                new DepositCommand(deposit, DepositSubsystem.DepositState.INTERMEDIATE)
             );
 
     }
