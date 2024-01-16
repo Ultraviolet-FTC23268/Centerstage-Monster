@@ -19,6 +19,8 @@ public class swervePositionCommand extends CommandBase {
     public Pose targetPose;
     private final double v;
 
+    private final double ms;
+
     public static double max_power = 1;
     public static double max_heading = 0.5;
 
@@ -53,6 +55,19 @@ public class swervePositionCommand extends CommandBase {
         this.localizer = localizer;
         this.targetPose = targetPose;
         this.v = voltage;
+        this.ms = 5000;
+
+        /*xController = new PIDFController(xP, 0.0, xD, 0);
+        yController = new PIDFController(yP, 0.0, yD, 0);
+        hController = new PIDFController(hP, 0.0, hD, 0);*/
+    }
+
+    public swervePositionCommand(Drivetrain drivetrain, Localizer localizer, Pose targetPose, double override, double voltage) {
+        this.drivetrain = drivetrain;
+        this.localizer = localizer;
+        this.targetPose = targetPose;
+        this.v = voltage;
+        this.ms = override;
 
         /*xController = new PIDFController(xP, 0.0, xD, 0);
         yController = new PIDFController(yP, 0.0, yD, 0);
@@ -80,7 +95,7 @@ public class swervePositionCommand extends CommandBase {
             stable.reset();
         }
 
-        return timer.milliseconds() > 5000 || stable.milliseconds() > 250;
+        return timer.milliseconds() > ms || stable.milliseconds() > 250;
     }
 
     public Pose getPower(Pose robotPose) {

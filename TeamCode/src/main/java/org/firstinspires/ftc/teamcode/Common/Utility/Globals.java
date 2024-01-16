@@ -25,18 +25,18 @@ public class Globals {
 
     //Lift Positions
     public static int DOWN_POS = 0;
-    public static int ROW1_POS = 675;
-    public static int ROW2_POS = 900;
-    public static int ROW3_POS = 1100;
-    public static int ROW4_POS = 1375;
-    public static int ROW5_POS = 1675;
-    public static int ROW6_POS = 1860;
-    public static int ROW7_POS = 1860;
-    public static int ROW8_POS = 1860;
-    public static int ROW9_POS = 1860;
-    public static int ROW10_POS = 1860;
-    public static int ROW11_POS = 1860;
-    public static int MAX_POS = 1860;
+    public static int ROW1_POS = 575;
+    public static int ROW2_POS = 825;
+    public static int ROW3_POS = 1075;
+    public static int ROW4_POS = 1325;
+    public static int ROW5_POS = 1625;
+    public static int ROW6_POS = 1850;
+    public static int ROW7_POS = 1850;
+    public static int ROW8_POS = 1850;
+    public static int ROW9_POS = 1850;
+    public static int ROW10_POS = 1850;
+    public static int ROW11_POS = 1850;
+    public static int MAX_POS = 1850;
 
     public static int SWING_IN_POS = 325;
     public static double LIFT_ERROR_TOLERANCE = 20;

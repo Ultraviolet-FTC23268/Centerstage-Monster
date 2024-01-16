@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.Drivetrain;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.Localizer;
 import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
+import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
 
 @Config
 public class PositionCommand extends CommandBase {
@@ -45,6 +46,11 @@ public class PositionCommand extends CommandBase {
     private ElapsedTime delayTimer;
 
     private final double v;
+
+    private RobotHardware robot = RobotHardware.getInstance();
+
+    private ElapsedTime timer;
+    private ElapsedTime stable;
 
     public PositionCommand(Drivetrain drivetrain, Localizer localizer, Pose targetPose, double delay, double dead, double voltage) {
         this.drivetrain = drivetrain;
