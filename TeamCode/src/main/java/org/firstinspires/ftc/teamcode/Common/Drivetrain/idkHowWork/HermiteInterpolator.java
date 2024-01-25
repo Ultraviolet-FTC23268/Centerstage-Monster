@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Common.Drivetrain.path;
+package org.firstinspires.ftc.teamcode.Common.Drivetrain.idkHowWork;
 
 import org.ejml.simple.SimpleMatrix;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.HermitePose;

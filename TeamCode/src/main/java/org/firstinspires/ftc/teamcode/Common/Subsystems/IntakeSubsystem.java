@@ -17,15 +17,9 @@ public class IntakeSubsystem {
 
     public IntakeState intakeState = IntakeState.OFF;
 
-    public PIDController controller;
-
     public static double intakeInSpeed = -1;
     public static double intakeOutSpeed = 1;
-    public static double intakeOutSpeedAuton = .2;
-
-    public static double P = 0;
-    public static double I = 0;
-    public static double D = 0;
+    public static double intakeOutSpeedAuton = .35;
 
     public enum IntakeState {
         OFF,
@@ -37,7 +31,6 @@ public class IntakeSubsystem {
     public IntakeSubsystem(RobotHardware robot) {
 
         this.robot = robot;
-        this.controller = new PIDController(P, I, D);
 
     }
 

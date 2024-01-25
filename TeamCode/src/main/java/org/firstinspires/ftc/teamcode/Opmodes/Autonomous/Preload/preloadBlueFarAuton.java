@@ -36,7 +36,7 @@ import org.firstinspires.ftc.teamcode.Other.Side;
 import org.firstinspires.ftc.vision.VisionPortal;
 
 @Config
-@Autonomous(name = "\uD83D\uDD35 Far Preload Auto")
+@Autonomous(name = "\uD83D\uDD35 ⇒ Preload Far Auto")
 public class preloadBlueFarAuton extends CommandOpMode {
 
     private final RobotHardware robot = RobotHardware.getInstance();
@@ -54,16 +54,16 @@ public class preloadBlueFarAuton extends CommandOpMode {
     private double loopTime = 0.0;
 
     public static int scoreDelay = 500;
-    public static int pauseDelay = 0;
+    public static int pauseDelay = 10000;
 
     public static int intakeScoreLength = 500;
 
-    public static double preYellowPosX = -75;
-    public static double preYellowPosY= 32;
+    public static double preYellowPosX = -78;
+    public static double preYellowPosY= 37;
     public static double preYellowPosH = Math.PI;
 
-    public static double yellowPosX = -86;
-    public static double yellowPosY= 32;
+    public static double yellowPosX = -88;
+    public static double yellowPosY= 37;
     public static double yellowPosH = Math.PI;
 
     public static double purplePosX = -3;
@@ -72,7 +72,7 @@ public class preloadBlueFarAuton extends CommandOpMode {
     public static double purplePosH = 0;
 
     public static double parkPosX = -80;
-    public static double parkPosY= 45;
+    public static double parkPosY= 55;
 
     public static double parkPosH = 0;
 
@@ -83,15 +83,15 @@ public class preloadBlueFarAuton extends CommandOpMode {
     public static double gatePosY2 = 30;
 
     public static double crossPosX = -65;
-    public static double crossPosY= 60;;
+    public static double crossPosY= 60;
 
-    public static int preYellowOverride = 1500;
+    public static int preYellowOverride = 5000;//4000;
     public static int yellowOverride = 1000;
     public static int gateOverride = 1000;
     public static int gate2Override = 0;
     public static int purpleOverride = 2500;
-    public static int crossOverride = 1500;
-    public static int parkOverride = 2500;
+    public static int crossOverride = 2000;
+    public static int parkOverride = 5000;//2500;
 
     public static int bucketHeightOffset = 0;
 
@@ -128,6 +128,7 @@ public class preloadBlueFarAuton extends CommandOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         deposit.update(DepositSubsystem.DepositState.INTAKE);
+        deposit.update(DepositSubsystem.GateState.CLOSED);
 
         robot.read(drivetrain, null);
         while (!isStarted()) {
@@ -153,6 +154,7 @@ public class preloadBlueFarAuton extends CommandOpMode {
 
         Pose yellowScorePos = new Pose();
         Pose preYellowScorePos = new Pose();
+        Pose prePurpleScorePos = new Pose(0, 0, 0);
         Pose purpleScorePos = new Pose();
         Pose parkPos = new Pose();
         Pose gatePos2 = new Pose(gatePosX2, gatePosY2, Math.PI);
@@ -161,25 +163,31 @@ public class preloadBlueFarAuton extends CommandOpMode {
 
         switch (side) {
             case LEFT:
-                purpleScorePos = new Pose(-3, 30, 0);
+                prePurpleScorePos = new Pose(0, 26, 0);
+                purpleScorePos = new Pose(-6, 26, 0);
                 gatePos2 = new Pose(gatePosX2, gatePosY2, Math.PI);
-                preYellowScorePos = new Pose(-75, 21, Math.PI);
-                yellowScorePos = new Pose(-85.5, 21, Math.PI);
-                parkPos = new Pose(-80, 45, Math.PI); //y: 5 for other park
+                preYellowScorePos = new Pose(-78, 33, Math.PI);
+                yellowScorePos = new Pose(-88, 33, Math.PI);
+                parkPos = new Pose(parkPosX, parkPosY, Math.PI); //y: 10 for other park
+                gate2Override = 1000;
                 break;
             case CENTER:
-                purpleScorePos = new Pose(0, 46, Math.PI/2);
-                gatePos2 = new Pose(gatePosX, gatePosY, Math.PI);
-                preYellowScorePos = new Pose(-75, 27, Math.PI);
-                yellowScorePos = new Pose(-85.5, 27, Math.PI);
-                parkPos = new Pose(-80, 45, Math.PI); //y: 5 for other park
+                purpleScorePos = new Pose(6, 38, 0);
+                gatePos2 = new Pose(12, 38, 0);
+                gatePos = new Pose(10, 60, Math.PI);
+                preYellowScorePos = new Pose(-78, preYellowPosY, Math.PI);
+                yellowScorePos = new Pose(-88, yellowPosY, Math.PI);
+                parkPos = new Pose(parkPosX, parkPosY, Math.PI); //y: 10 for other park
+                //gate2Override = 1000;
+                //gateOverride = 1000;
                 break;
             case RIGHT:
-                purpleScorePos = new Pose(9, 40, Math.PI/2);
+                purpleScorePos = new Pose(10, 40, Math.PI/2);
                 gatePos2 = new Pose(gatePosX, gatePosY, Math.PI);
                 preYellowScorePos = new Pose(-78, 36, Math.PI);
                 yellowScorePos = new Pose(-88, 36, Math.PI);
-                parkPos = new Pose(-80, 45, Math.PI); //y: 5 for other park
+                parkPos = new Pose(parkPosX, parkPosY, Math.PI); //y: 10 for other park
+                gate2Override = 0;
                 break;
             default:
                 break;
@@ -192,6 +200,9 @@ public class preloadBlueFarAuton extends CommandOpMode {
         CommandScheduler.getInstance().schedule(
                 new SequentialCommandGroup(
 
+                        // go to prepurple pixel scoring pos (left only)
+                        new swervePositionCommand(drivetrain, localizer, prePurpleScorePos, 1000, robot.getVoltage()),
+
                         // go to purple pixel scoring pos
                         new swervePositionCommand(drivetrain, localizer, purpleScorePos, purpleOverride, robot.getVoltage()),
 
@@ -202,10 +213,10 @@ public class preloadBlueFarAuton extends CommandOpMode {
 
                         //gate pos2
 
-                        new swervePositionCommand(drivetrain, localizer, gatePos2, gateOverride, robot.getVoltage()),
+                        new swervePositionCommand(drivetrain, localizer, gatePos2, gate2Override, robot.getVoltage()),
 
                         //gate pos
-                        new swervePositionCommand(drivetrain, localizer, gatePos, gate2Override, robot.getVoltage()),
+                        new swervePositionCommand(drivetrain, localizer, gatePos, gateOverride, robot.getVoltage()),
 
                         //after gate pos
                         new swervePositionCommand(drivetrain, localizer, crossPos, crossOverride, robot.getVoltage()),
@@ -214,7 +225,7 @@ public class preloadBlueFarAuton extends CommandOpMode {
                         new WaitCommand(pauseDelay),
 
                         //pre yellow pos
-                        new swervePositionCommand(drivetrain, localizer, preYellowScorePos,robot.getVoltage())
+                        new swervePositionCommand(drivetrain, localizer, preYellowScorePos, preYellowOverride, robot.getVoltage())
                                 .alongWith(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW1)),
 
                         //go to yellow scoring pos
@@ -227,7 +238,9 @@ public class preloadBlueFarAuton extends CommandOpMode {
 
                         //go to park pos
                         new swervePositionCommand(drivetrain, localizer, parkPos, parkOverride, robot.getVoltage())
-                                .alongWith(new CancelableResetArmCommand(lift, deposit))
+                                .alongWith(new CancelableResetArmCommand(lift, deposit)),
+
+                        new swervePositionCommand(drivetrain, localizer, new Pose(parkPosX, parkPosY, -Math.PI/2), parkOverride, robot.getVoltage())
 
 
                 )
@@ -246,9 +259,6 @@ public class preloadBlueFarAuton extends CommandOpMode {
 
         double loop = System.nanoTime();
         telemetry.addData("hz ", 1000000000 / (loop - loopTime));
-        telemetry.addData("xPos ", localizer.getPos().x);
-        telemetry.addData("yPos ", localizer.getPos().y);
-        telemetry.addData("hPos ", localizer.getPos().heading);
         loopTime = loop;
         telemetry.update();
 

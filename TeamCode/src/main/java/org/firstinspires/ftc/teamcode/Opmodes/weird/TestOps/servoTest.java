@@ -22,7 +22,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-//@Disabled
+@Disabled
 @Config
 @TeleOp(name = "servoTest")
 //@Autonomous(name = "servoTest")

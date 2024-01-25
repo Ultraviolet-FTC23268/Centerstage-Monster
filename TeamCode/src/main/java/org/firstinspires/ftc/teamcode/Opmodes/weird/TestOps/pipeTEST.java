@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.opencv.core.Scalar;
 
-@Disabled
+//@Disabled
 @Autonomous(name = "PipelineTest")
 public class pipeTEST extends LinearOpMode {
 
@@ -24,8 +24,8 @@ public class pipeTEST extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Globals.COLOR = Side.BLUE;
-        Globals.SIDE = Side.LEFT;
+        Globals.COLOR = Side.RED;
+        Globals.SIDE = Side.RIGHT;
 
         propPipeline = new PropPipeline();
         portal = new VisionPortal.Builder()
@@ -43,8 +43,8 @@ public class pipeTEST extends LinearOpMode {
         Scalar scale = new Scalar(1/1000000.0,1/1000000.0,1/1000000.0);
         while (opModeInInit()) {
             telemetry.addData("Location", propPipeline.getLocation());
-            telemetry.addData("leftZone", propPipeline.left.mul(scale).toString());
-            telemetry.addData("centerZone", propPipeline.center.mul(scale).toString());
+            //telemetry.addData("leftZone", propPipeline.left.mul(scale).toString());
+            //telemetry.addData("centerZone", propPipeline.center.mul(scale).toString());
             if(Globals.SIDE == Side.LEFT)
                 telemetry.addData("leftZone", propPipeline.leftColor);
             else

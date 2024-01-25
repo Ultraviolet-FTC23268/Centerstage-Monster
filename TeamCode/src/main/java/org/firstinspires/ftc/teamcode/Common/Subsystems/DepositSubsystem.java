@@ -42,7 +42,7 @@ public class DepositSubsystem extends SubsystemBase {
     public static double gateOpenPos = 0.4;
     public static double gateClosedPos = 0.55;
 
-    public static double intakePos = 0.0225;
+    public static double intakePos = 0.022;
     public static double intermediatePos = 0.06;
     public static double hangPos = 0.5;
     public static double depositPos = 0.87;

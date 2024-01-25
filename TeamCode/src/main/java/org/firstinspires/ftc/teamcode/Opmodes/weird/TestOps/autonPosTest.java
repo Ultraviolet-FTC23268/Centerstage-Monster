@@ -8,14 +8,17 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
+import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Common.Commands.auton.PositionCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.auton.swervePositionCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.auton.swervePositionCommand;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.TwoWheelLocalizer;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
+import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
 import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
 
 @Config
@@ -39,8 +42,8 @@ public class autonPosTest extends CommandOpMode {
     public static double posY2 = 0;
     public static double posH2 = 0;
 
-    public static int dead = 5000;
-    public static int dead2 = 5000;
+    public static int dead = 15000;
+    public static int dead2 = 15000;
 
     Pose testPos = new Pose();
     Pose testPos2 = new Pose();
@@ -48,6 +51,7 @@ public class autonPosTest extends CommandOpMode {
     @Override
     public void initialize() {
 
+        Globals.USE_WHEEL_FEEDFORWARD = true;
         CommandScheduler.getInstance().reset();
 
         robot.init(hardwareMap, telemetry);
@@ -57,7 +61,7 @@ public class autonPosTest extends CommandOpMode {
 
         telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
 
-        localizer.setPoseEstimate(new Pose2d(0, 0, 0));
+        localizer.setPoseEstimate(new Pose2d( 0, 0, 0));
         testPos = new Pose(posX, posY, posH);
         testPos2 = new Pose(posX2, posY2, posH2);
 
@@ -83,8 +87,10 @@ public class autonPosTest extends CommandOpMode {
 
         CommandScheduler.getInstance().schedule(
                 new SequentialCommandGroup(
-                        new PositionCommand(drivetrain, localizer, testPos, 0, dead, robot.getVoltage()),
-                        new PositionCommand(drivetrain, localizer, testPos2, 0, dead2, robot.getVoltage())
+                        new swervePositionCommand(drivetrain, localizer, testPos, dead, robot.getVoltage()),
+                        new WaitCommand(1000),
+                        new swervePositionCommand(drivetrain, localizer, testPos2, dead2, robot.getVoltage()),
+                        new WaitCommand(1000)
                 )
         );
     }

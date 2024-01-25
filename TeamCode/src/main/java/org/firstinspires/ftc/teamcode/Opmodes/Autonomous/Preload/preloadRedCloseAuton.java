@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Opmodes.weird.TestOps;
+package org.firstinspires.ftc.teamcode.Opmodes.Autonomous.Preload;
 
 import android.util.Size;
 
@@ -12,14 +12,14 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.Common.Commands.abobot.GateCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.abobot.IntakeCommand;
-import org.firstinspires.ftc.teamcode.Common.Commands.auton.MecPositionCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.auton.CancelableResetArmCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.auton.swervePositionCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.teleop.MoveArmCommand;
-import org.firstinspires.ftc.teamcode.Common.Commands.teleop.ResetArmCommand;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.TwoWheelLocalizer;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;
@@ -33,47 +33,38 @@ import org.firstinspires.ftc.teamcode.Other.Side;
 import org.firstinspires.ftc.vision.VisionPortal;
 
 @Config
-@Disabled
-@Autonomous(name = "Red Auto")
-public class redAutonOld extends CommandOpMode {
+@Autonomous(name = "\uD83D\uDFE5 ⇒ Preload Close Auto")
+public class preloadRedCloseAuton extends CommandOpMode {
 
+    public static int scoreDelay = 500;
+    public static int intakeScoreLength = 750;
+    public static double preYellowPosX = -28;
+    public static double preYellowPosY= 35;
+    public static double preYellowPosH = Math.PI;
+    public static double yellowPosX = -37;
+    public static double yellowPosY= 35;
+    public static double yellowPosH = Math.PI;
+    public static double purplePosX = -7;
+    public static double purplePosY= 32;
+    public static double purplePosH = 0;
+    public static double parkPosX = 30;
+    public static double parkPosY= 5;
+    public static double parkPosH = 0;
+    public static int preYellowOverride = 5000;//2000;
+    public static int yellowOverride = 1000;
+    public static int prePurpleOverride = 5000;//1500;
+    public static int purpleOverride = 5000;//2500;
+    public static int parkOverride = 2500;
+    public static int bucketHeightOffset = 0;
     private final RobotHardware robot = RobotHardware.getInstance();
     private SwerveDrivetrain drivetrain;
     private TwoWheelLocalizer localizer;
     private DepositSubsystem deposit;
     private IntakeSubsystem intake;
-
     private LiftSubsystem lift;
-
     private PropPipeline propPipeline;
     private VisionPortal portal;
-
-
     private double loopTime = 0.0;
-
-    public static int scoreDelay = 500;
-    public static int unscoreDelay = 1500;
-
-    public static int intakeScoreLength = 750;
-
-    public static double preYellowPosX = -24;
-    public static double preYellowPosY= 20.5;
-    public static double preYellowPosH = Math.PI;
-
-    public static double yellowPosX = -34;
-    public static double yellowPosY= 20.5;
-    public static double yellowPosH = Math.PI;
-
-    public static double purplePosX = 6;
-    public static double purplePosY= 32;
-
-    public static double purplePosH = 0;
-
-    public static double parkPosX = -36;
-    public static double parkPosY= 5;
-
-    public static double parkPosH = 0;
-
 
     @Override
     public void initialize() {
@@ -82,6 +73,7 @@ public class redAutonOld extends CommandOpMode {
 
         Globals.COLOR = Side.RED;
         Globals.SIDE = Side.RIGHT;
+        Globals.USE_WHEEL_FEEDFORWARD = true;
 
         robot.init(hardwareMap, telemetry);
         robot.enabled = true;
@@ -106,7 +98,8 @@ public class redAutonOld extends CommandOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        //robot.addSubsystem(drivetrain, deposit, intake);
+        deposit.update(DepositSubsystem.DepositState.INTAKE);
+        deposit.update(DepositSubsystem.GateState.CLOSED);
 
         robot.read(drivetrain, null);
         while (!isStarted()) {
@@ -128,51 +121,35 @@ public class redAutonOld extends CommandOpMode {
         localizer.setPoseEstimate(new Pose2d(0, 0, 0));
 
         Side side = propPipeline.getLocation();
-        if(side == Side.LEFT)
-            side = Side.RIGHT;
-        else if(side == Side.RIGHT)
-            side = Side.LEFT;
         portal.close();
 
-        Pose yellowScorePos = new Pose();
         Pose preYellowScorePos = new Pose();
+        Pose yellowScorePos = new Pose();
+        Pose prePurplePos = new Pose();
         Pose purpleScorePos = new Pose();
         Pose parkPos = new Pose();
-        Pose parkPos2 = new Pose();
-
-        Pose yellowScorePosH = new Pose();
-        Pose preYellowScorePosH = new Pose();
-        Pose purpleScorePosH = new Pose();
-        Pose parkPosHeading = new Pose();
-
-
-
-        // 0.3, 300
 
         switch (side) {
-            case LEFT:
-                preYellowScorePos = new Pose(24, 19.5,0);
-                preYellowScorePosH = new Pose(24, 19.5, 0);
-                yellowScorePos = new Pose(35.5, 19.5, 0);
-                purpleScorePos = new Pose(16, 35, 0);
-                parkPos = new Pose(28, 5, 0);
-                parkPos2 = new Pose(35, 5, 0);
+            case RIGHT:
+                prePurplePos =  new Pose(6, 23, -Math.PI/2);
+                purpleScorePos = new Pose(6, 23, -Math.PI/2);
+                preYellowScorePos = new Pose(30, 21, 0);
+                yellowScorePos = new Pose(38, 21, 0);
+                parkPos = new Pose(parkPosX, parkPosY, 0); //y: 52 for other park
                 break;
             case CENTER:
-                preYellowScorePos = new Pose(24, 26.5, 0);
-                preYellowScorePosH = new Pose(24, 26.5, 0);
-                yellowScorePos = new Pose(35.5, 26.5, 0);
-                purpleScorePos = new Pose(6, 38, 0);
-                parkPos = new Pose(18, 5, 0);
-                parkPos2 = new Pose(35, 5, 0);
+                prePurplePos = new Pose(5 , 37, 0);
+                purpleScorePos = new Pose(5, 37, 0);
+                preYellowScorePos = new Pose(30, 27 , 0);
+                yellowScorePos = new Pose(38, 27, 0);
+                parkPos = new Pose(parkPosX, parkPosY, 0); //y: 52 for other park
                 break;
-            case RIGHT:
-                preYellowScorePos = new Pose(24, 32.5,0);
-                preYellowScorePosH = new Pose(24, 32.5, 0);
-                yellowScorePos = new Pose(35.5, 32.5, 0);
-                purpleScorePos = new Pose(6, 32, 0);
-                parkPos = new Pose(6, 5, 0);
-                parkPos2 = new Pose(35, 5, 0);
+            case LEFT:
+                prePurplePos = new Pose(2, 27, 0);
+                purpleScorePos = new Pose(-4, 27, 0);
+                preYellowScorePos = new Pose(30, 33, 0);
+                yellowScorePos = new Pose(38, 33, 0);
+                parkPos = new Pose(parkPosX, parkPosY, 0); //y: 52 for other park
                 break;
             default:
                 break;
@@ -185,41 +162,34 @@ public class redAutonOld extends CommandOpMode {
         CommandScheduler.getInstance().schedule(
                 new SequentialCommandGroup(
 
-                        //go to pre yellow pos
-                        new MecPositionCommand(drivetrain, localizer, preYellowScorePos)
-                                .alongWith(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW2)),
-                        new MecPositionCommand(drivetrain, localizer, preYellowScorePosH),
-
-                        //go to yellow scoring pos
-                        new MecPositionCommand(drivetrain, localizer, yellowScorePos)
+                        //prepurple for right only
+                        new swervePositionCommand(drivetrain, localizer, prePurplePos, prePurpleOverride, robot.getVoltage())
                                 .alongWith(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW1)),
 
-                        //score yellow
+                        //go to purple pos
+                        new swervePositionCommand(drivetrain, localizer, purpleScorePos, purpleOverride, robot.getVoltage()),
 
-                        /*new ScoreCommand(lift, deposit)
-                                .alongWith(new WaitCommand(unscoreDelay)),
-                        new UnscoreCommand(lift, deposit),*/
-
-                        new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.DEPOSIT))
-                                .alongWith(new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.DEPOSIT))),
-                        new WaitCommand(unscoreDelay),
-                        new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.INTERMEDIATE))
-                                .alongWith(new InstantCommand(() -> deposit.update(DepositSubsystem.DepositState.INTERMEDIATE))),
-                        new WaitCommand(750),
-
-                        // go to purple pixel scoring pos
-                        new MecPositionCommand(drivetrain, localizer, purpleScorePos),
-
-                        // score purple pixel
+                        //score purple pixel
                         new IntakeCommand(intake, IntakeSubsystem.IntakeState.AUTON_OUTWARDS)
                                 .alongWith(new WaitCommand(intakeScoreLength)),
                         new IntakeCommand(intake, IntakeSubsystem.IntakeState.OFF),
-                        //new InstantCommand(() -> score da yellow),
 
-                        //go to park pos
-                        new MecPositionCommand(drivetrain, localizer, parkPos),
-                        new MecPositionCommand(drivetrain, localizer, parkPos2),
-                        new ResetArmCommand(lift, deposit)
+                        //go to pre yellow pos
+                        new swervePositionCommand(drivetrain, localizer, preYellowScorePos, preYellowOverride, robot.getVoltage())
+                                .alongWith(new InstantCommand( () -> lift.setTargetPos(Globals.ROW1_POS-bucketHeightOffset))),
+
+                        //go to yellow pos
+                        new swervePositionCommand(drivetrain, localizer, yellowScorePos, yellowOverride, robot.getVoltage()),
+
+                        //score yellow
+                        new GateCommand(deposit, DepositSubsystem.GateState.OPEN),
+                        new WaitCommand(scoreDelay),
+
+                        //park
+                        new swervePositionCommand(drivetrain, localizer, parkPos, parkOverride, robot.getVoltage())
+                                .alongWith(new CancelableResetArmCommand(lift, deposit)),
+
+                        new swervePositionCommand(drivetrain, localizer, new Pose(parkPosX, parkPosY, -Math.PI/2), parkOverride, robot.getVoltage())
 
                 )
         );
@@ -237,9 +207,6 @@ public class redAutonOld extends CommandOpMode {
 
         double loop = System.nanoTime();
         telemetry.addData("hz ", 1000000000 / (loop - loopTime));
-        telemetry.addData("xPos ", localizer.getPos().x);
-        telemetry.addData("yPos ", localizer.getPos().y);
-        telemetry.addData("hPos ", localizer.getPos().heading);
         loopTime = loop;
         telemetry.update();
 

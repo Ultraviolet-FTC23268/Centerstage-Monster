@@ -39,36 +39,36 @@ public class PropPipeline implements VisionProcessor, CameraStreamSource {
 
     //Backdrop Side
 
-    public static int BackdropBlueLeftX = 75;
-    public static int BackdropBlueLeftY = 165;
+    public static int BackdropBlueLeftX = 90;
+    public static int BackdropBlueLeftY = 130;
 
-    public static int BackdropBlueCenterX = 645;
-    public static int BackdropBlueCenterY = 120;
+    public static int BackdropBlueCenterX = 695;
+    public static int BackdropBlueCenterY = 80;
 
-    public static int BackdropRedRightX = 950;
-    public static int BackdropRedRightY = 85;
+    public static int BackdropRedRightX = 975;
+    public static int BackdropRedRightY = 40;
 
-    public static int BackdropRedCenterX = 405;
-    public static int BackdropRedCenterY = 50;
+    public static int BackdropRedCenterX = 370;
+    public static int BackdropRedCenterY = 20;
 
     //Wing Side
 
-    public static int WingBlueRightX = 950;
-    public static int WingBlueRightY = 85;
+    public static int WingBlueRightX = 975;
+    public static int WingBlueRightY = 120;
 
-    public static int WingBlueCenterX = 405;
-    public static int WingBlueCenterY = 50;
+    public static int WingBlueCenterX = 375;
+    public static int WingBlueCenterY = 85;
 
     public static int WingRedLeftX = 75;
-    public static int WingRedLeftY = 165;
+    public static int WingRedLeftY = 65;
 
-    public static int WingRedCenterX = 645;
-    public static int WingRedCenterY = 120;
+    public static int WingRedCenterX = 680;
+    public static int WingRedCenterY = 30;
 
     public static int width = 100;
     public static int height = 100;
 
-    public static double redThreshold = 1.72;
+    public static double redThreshold = 1.73;
     public static double blueThreshold = 0.75;
     public static double threshold = 0;
 
@@ -146,7 +146,7 @@ public class PropPipeline implements VisionProcessor, CameraStreamSource {
                     Imgproc.rectangle(frame, centerZoneArea, new Scalar(255, 255, 255));
                 } else {
                     // right zone has it
-                    location = Side.LEFT;
+                    location = Side.RIGHT;
                     Imgproc.rectangle(frame, leftZoneArea, new Scalar(255, 255, 255));
                 }
             }

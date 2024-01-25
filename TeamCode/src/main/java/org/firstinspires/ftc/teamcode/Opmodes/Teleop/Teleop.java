@@ -7,6 +7,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.controller.PIDFController;
@@ -122,6 +123,9 @@ public class Teleop extends CommandOpMode {
         gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .whenPressed(() -> Globals.SWERVE = true);
 
+        gamepadEx.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+                .whenPressed(() -> schedule(new InstantCommand( () -> lift.setTargetPos(Globals.ROW1_POS-150))));
+
         /*gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .whenPressed(() -> robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE));
         gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
@@ -163,15 +167,18 @@ public class Teleop extends CommandOpMode {
 
         //Climb Height
         gamepadEx2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
-                .whenPressed(() -> schedule(new ClimbUpCommand(lift, deposit)));
+                .whenPressed(() -> schedule(new SequentialCommandGroup(new InstantCommand( () -> CommandScheduler.getInstance().cancelAll()),
+                                                                       new ClimbUpCommand(lift, deposit))));
 
         //Disable all servos (not really lol)
         gamepadEx2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whileHeld(() -> schedule(new DisableAllCommand(robot)));
 
-        //Drone Open
+        //Launch Drone
         gamepadEx2.getGamepadButton(GamepadKeys.Button.Y)
-                .whenPressed(() -> robot.droneLatch.setPosition(Globals.DRONE_OPEN));
+                .whenPressed(() -> schedule(new SequentialCommandGroup(new InstantCommand( () -> robot.droneLatch.setPosition(Globals.DRONE_OPEN)),
+                                                                       new WaitCommand(500),
+                                                                       new InstantCommand(() -> robot.droneLatch.setPosition(Globals.DRONE_CLOSED)))));
 
     }
 

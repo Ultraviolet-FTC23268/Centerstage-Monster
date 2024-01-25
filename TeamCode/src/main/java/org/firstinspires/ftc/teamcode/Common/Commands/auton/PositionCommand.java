@@ -36,6 +36,8 @@ public class PositionCommand extends CommandBase {
     public static double max_power = 1;
     public static double max_heading = 0.5;
 
+    public static double k = 0;
+
     Drivetrain drivetrain;
     Localizer localizer;
     Pose targetPose;
@@ -123,9 +125,9 @@ public class PositionCommand extends CommandBase {
     public Pose goToPosition(Pose robotPose, Pose targetPose) {
         Pose deltaPose = relDistanceToTarget(robotPose, targetPose);
         Pose powers = new Pose(
-                xController.calculate(0, deltaPose.x),
-                yController.calculate(0, deltaPose.y),
-                hController.calculate(0, deltaPose.heading)
+                xController.calculate(0, deltaPose.x)  + k * Math.signum(deltaPose.x),
+                yController.calculate(0, deltaPose.y)  + k * Math.signum(deltaPose.y),
+                hController.calculate(0, deltaPose.heading)  + k * Math.signum(deltaPose.x)
         );
         double x_rotated = powers.x * Math.cos(robotPose.heading) - powers.y * Math.sin(robotPose.heading);
         double y_rotated = powers.x * Math.sin(robotPose.heading) + powers.y * Math.cos(robotPose.heading);

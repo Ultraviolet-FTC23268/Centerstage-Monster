@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LynxModuleMeta;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -94,7 +95,7 @@ public class RobotHardware {
 
     private HardwareMap hardwareMap;
 
-    private final double startingIMUOffset = Globals.SIDE == Side.BLUE ? -Math.PI/2: Math.PI/2;
+    private final double startingIMUOffset = Globals.SIDE == Side.BLUE ? Math.PI/2: -Math.PI/2;
 
     public static RobotHardware getInstance() {
         if (instance == null) {
@@ -115,10 +116,6 @@ public class RobotHardware {
         imu.initialize(parameters);
 
         modules = hardwareMap.getAll(LynxModule.class);
-
-        //for (LynxModule hub : modules) {
-        //    hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
-        ///}
 
         modules.get(0).setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
         modules.get(1).setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL);
@@ -252,9 +249,6 @@ public class RobotHardware {
     }
 
     public void clearBulkCache() {
-        //for (LynxModule hub : modules) {
-        //    hub.clearBulkCache();
-        //}
         modules.get(0).clearBulkCache();
         modules.get(1).clearBulkCache();
     }

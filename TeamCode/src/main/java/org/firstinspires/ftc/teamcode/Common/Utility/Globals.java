@@ -36,14 +36,14 @@ public class Globals {
     public static int ROW9_POS = 1850;
     public static int ROW10_POS = 1850;
     public static int ROW11_POS = 1850;
-    public static int MAX_POS = 1850;
+    public static int MAX_POS = 1900;
 
     public static int SWING_IN_POS = 325;
     public static double LIFT_ERROR_TOLERANCE = 20;
     public static int LIFT_RESET_OFFSET = 150;
 
     //Drone Positions
-    public static double DRONE_CLOSED = 0.65;
+    public static double DRONE_CLOSED = 0.6;
     public static double DRONE_OPEN = 0.25;
 
     //Move Arm Delays
