@@ -22,29 +22,21 @@ import org.firstinspires.ftc.teamcode.Common.Commands.auton.CancelableResetArmCo
 import org.firstinspires.ftc.teamcode.Common.Commands.auton.swervePositionCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.teleop.MoveArmCommand;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
-import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.TwoWheelLocalizer;
-import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
 import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
-import org.firstinspires.ftc.teamcode.Other.Pipelines.PropPipeline;
-import org.firstinspires.ftc.teamcode.Other.Side;
+import org.firstinspires.ftc.teamcode.Common.Vision.Location;
+import org.firstinspires.ftc.teamcode.Common.Vision.Pipelines.PropPipeline;
 import org.firstinspires.ftc.vision.VisionPortal;
 
-//@Disabled
+@Disabled
 @Config
 @Autonomous(name = "\uD83D\uDD35 Cycle Far Auto")
 public class cycleBlueFarAuton extends CommandOpMode {
 
     private final RobotHardware robot = RobotHardware.getInstance();
-    private SwerveDrivetrain drivetrain;
-    private TwoWheelLocalizer localizer;
-    private DepositSubsystem deposit;
-    private IntakeSubsystem intake;
-
-    private LiftSubsystem lift;
 
     private PropPipeline propPipeline;
     private VisionPortal portal;
@@ -108,19 +100,14 @@ public class cycleBlueFarAuton extends CommandOpMode {
 
         CommandScheduler.getInstance().reset();
 
-        Globals.COLOR = Side.BLUE;
-        Globals.SIDE = Side.RIGHT;
+        Globals.ALLIANCE = Location.BLUE;
+        Globals.SIDE = Location.RIGHT;
         Globals.USE_WHEEL_FEEDFORWARD = true;
 
         robot.init(hardwareMap, telemetry);
         robot.enabled = true;
-        drivetrain = new SwerveDrivetrain(robot);
-        localizer = new TwoWheelLocalizer(robot);
-        lift = new LiftSubsystem(robot);
-        deposit = new DepositSubsystem(robot);
-        intake = new IntakeSubsystem(robot);
 
-        localizer.setPoseEstimate(new Pose2d(0, 0, 0));
+        robot.localizer.setPoseEstimate(new Pose2d(0, 0, 0));
 
         propPipeline = new PropPipeline();
         portal = new VisionPortal.Builder()
@@ -135,29 +122,29 @@ public class cycleBlueFarAuton extends CommandOpMode {
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        deposit.update(DepositSubsystem.DepositState.INTAKE);
-        deposit.update(DepositSubsystem.GateState.OPEN);
+        robot.deposit.update(DepositSubsystem.DepositState.INTAKE);
+        robot.deposit.update(DepositSubsystem.GateState.OPEN);
 
-        robot.read(drivetrain, null);
+        robot.read();
         while (!isStarted()) {
-            robot.read(drivetrain, null);
-            drivetrain.frontLeftModule.setTargetRotation(0);
-            drivetrain.frontRightModule.setTargetRotation(0);
-            drivetrain.backRightModule.setTargetRotation(0);
-            drivetrain.backLeftModule.setTargetRotation(0);
-            drivetrain.updateModules();
+            robot.read();
+            robot.drivetrain.frontLeftModule.setTargetRotation(0);
+            robot.drivetrain.frontRightModule.setTargetRotation(0);
+            robot.drivetrain.backRightModule.setTargetRotation(0);
+            robot.drivetrain.backLeftModule.setTargetRotation(0);
+            robot.drivetrain.updateModules();
 
             telemetry.addLine("auto in init");
             telemetry.addData("POS", propPipeline.getLocation());
             telemetry.update();
 
             robot.clearBulkCache();
-            robot.write(drivetrain, null);
+            robot.write();
         }
 
-        localizer.setPoseEstimate(new Pose2d(0, 0, 0));
+        robot.localizer.setPoseEstimate(new Pose2d(0, 0, 0));
 
-        Side side = propPipeline.getLocation();
+        Location side = propPipeline.getLocation();
         portal.close();
 
         Pose yellowScorePos = new Pose();
@@ -210,55 +197,55 @@ public class cycleBlueFarAuton extends CommandOpMode {
                 new SequentialCommandGroup(
 
                         // go to prepurple pixel scoring pos (left only)
-                        new swervePositionCommand(drivetrain, localizer, prePurpleScorePos, 1000, robot.getVoltage()),
+                        new swervePositionCommand(prePurpleScorePos, 1000),
 
                         // go to purple pixel scoring pos
-                        new swervePositionCommand(drivetrain, localizer, purpleScorePos, purpleOverride, robot.getVoltage()),
+                        new swervePositionCommand(purpleScorePos, purpleOverride),
 
                         // score purple pixel
-                        new IntakeCommand(intake, IntakeSubsystem.IntakeState.AUTON_OUTWARDS)
+                        new IntakeCommand(IntakeSubsystem.IntakeState.OUTWARDS)
                                 .alongWith(new WaitCommand(intakeScoreLength)),
-                        new IntakeCommand(intake, IntakeSubsystem.IntakeState.OFF),
+                        new IntakeCommand(IntakeSubsystem.IntakeState.OFF),
 
                         //prestack1 pos
-                        new swervePositionCommand(drivetrain, localizer, preStack1Pos, preStack1Override, robot.getVoltage()),
+                        new swervePositionCommand(preStack1Pos, preStack1Override),
 
                         //stack1 pos
-                        new swervePositionCommand(drivetrain, localizer, stack1Pos, stack1Override, robot.getVoltage()),
+                        new swervePositionCommand(stack1Pos, stack1Override),
 
                         //intake white
-                        new IntakeCommand(intake, IntakeSubsystem.IntakeState.INWARDS)
+                        new IntakeCommand(IntakeSubsystem.IntakeState.INWARDS)
                                 .alongWith(new WaitCommand(intakingLength)),
-                        new IntakeCommand(intake, IntakeSubsystem.IntakeState.OUTWARDS),
+                        new IntakeCommand(IntakeSubsystem.IntakeState.OUTWARDS),
 
                         //gate pos2
-                        new swervePositionCommand(drivetrain, localizer, gatePos2, gate2Override, robot.getVoltage()),
+                        new swervePositionCommand(gatePos2, gate2Override),
 
                         //gate pos
-                        new swervePositionCommand(drivetrain, localizer, gatePos, gateOverride, robot.getVoltage()),
+                        new swervePositionCommand(gatePos, gateOverride),
 
                         //after gate pos
-                        new swervePositionCommand(drivetrain, localizer, crossPos, crossOverride, robot.getVoltage()),
+                        new swervePositionCommand(crossPos, crossOverride),
 
                         //wait for other bots
                         new WaitCommand(pauseDelay)
-                                .alongWith(new IntakeCommand(intake, IntakeSubsystem.IntakeState.OFF)),
+                                .alongWith(new IntakeCommand(IntakeSubsystem.IntakeState.OFF)),
 
                         //pre yellow pos
-                        new swervePositionCommand(drivetrain, localizer, preYellowScorePos, preYellowOverride, robot.getVoltage())
-                                .alongWith(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW1)),
+                        new swervePositionCommand(preYellowScorePos, preYellowOverride)
+                                .alongWith(new MoveArmCommand(LiftSubsystem.LiftStateReel.ROW1)),
 
                         //go to yellow scoring pos
-                        new swervePositionCommand(drivetrain, localizer, yellowScorePos, yellowOverride, robot.getVoltage())
-                                .alongWith(new InstantCommand( () -> lift.setTargetPos(Globals.ROW1_POS-bucketHeightOffset))),
+                        new swervePositionCommand(yellowScorePos, yellowOverride)
+                                .alongWith(new InstantCommand( () -> robot.lift.setTargetPos(Globals.ROW1_POS-bucketHeightOffset))),
 
                         //score yellow
-                        new GateCommand(deposit, DepositSubsystem.GateState.OPEN),
+                        new GateCommand(DepositSubsystem.GateState.OPEN),
                         new WaitCommand(scoreDelay),
 
                         //go to park pos
-                        new swervePositionCommand(drivetrain, localizer, parkPos, parkOverride, robot.getVoltage())
-                                .alongWith(new CancelableResetArmCommand(lift, deposit))
+                        new swervePositionCommand(parkPos, parkOverride)
+                                .alongWith(new CancelableResetArmCommand())
 
 
                 )
@@ -268,22 +255,17 @@ public class cycleBlueFarAuton extends CommandOpMode {
     @Override
     public void run() {
 
-        robot.read(drivetrain, lift);
-
-        CommandScheduler.getInstance().run();
-
-        robot.loop(null, drivetrain, lift);
-        localizer.periodic();
+        robot.clearBulkCache();
+        robot.read();
+        robot.loop(null);
+        robot.write();
 
         double loop = System.nanoTime();
         telemetry.addData("hz ", 1000000000 / (loop - loopTime));
-        telemetry.addData("xPos ", localizer.getPos().x);
-        telemetry.addData("yPos ", localizer.getPos().y);
-        telemetry.addData("hPos ", localizer.getPos().heading);
         loopTime = loop;
         telemetry.update();
 
-        robot.write(drivetrain, lift);
-        robot.clearBulkCache();
+        CommandScheduler.getInstance().run();
+
     }
 }

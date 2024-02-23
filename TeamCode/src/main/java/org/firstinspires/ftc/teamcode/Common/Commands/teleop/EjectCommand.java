@@ -9,18 +9,19 @@ import org.firstinspires.ftc.teamcode.Common.Commands.abobot.LiftCommand;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
+import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
 
 public class EjectCommand extends SequentialCommandGroup {
-    public EjectCommand(LiftSubsystem lift, DepositSubsystem deposit) {
+    public EjectCommand() {
 
-        if(!lift.isUp)
+        if(!RobotHardware.getInstance().lift.isUp)
             addCommands(
-                    new LiftCommand(lift, LiftSubsystem.LiftStateReel.ROW1),
+                    new LiftCommand(LiftSubsystem.LiftStateReel.ROW1),
                     new WaitCommand(Globals.FLIP_OUT_DELAY),
-                    new DepositCommand(deposit, DepositSubsystem.DepositState.DEPOSIT),
+                    new DepositCommand(DepositSubsystem.DepositState.DEPOSIT),
                     new WaitCommand(Globals.EJECT_DELAY),
-                    new GateCommand(deposit, DepositSubsystem.GateState.OPEN),
-                    new ResetArmCommand(lift, deposit)
+                    new GateCommand(DepositSubsystem.GateState.OPEN),
+                    new ResetArmCommand()
             );
 
     }

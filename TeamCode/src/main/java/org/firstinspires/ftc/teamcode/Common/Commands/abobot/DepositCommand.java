@@ -3,11 +3,12 @@ package org.firstinspires.ftc.teamcode.Common.Commands.abobot;
 import com.arcrobotics.ftclib.command.InstantCommand;
 
 import org.firstinspires.ftc.teamcode.Common.Subsystems.DepositSubsystem;
+import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
 
 public class DepositCommand extends InstantCommand {
-    public DepositCommand(DepositSubsystem deposit, DepositSubsystem.DepositState state) {
+    public DepositCommand(DepositSubsystem.DepositState state) {
         super(
-                () -> deposit.update(state)
+                () -> RobotHardware.getInstance().deposit.update(state)
         );
     }
 }

@@ -7,22 +7,17 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.Drivetrain;
-import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.Localizer;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
 import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
 
 @Config
 public class swervePositionCommand extends CommandBase {
-    Localizer localizer;
-    Drivetrain drivetrain;
     public Pose targetPose;
-    private final double v;
 
     private final int ms;
 
-    public static double max_power = 1;
-    public static double max_heading = 0.5;
+    public static double max_power = 0.5;
+    public static double max_heading = 0.25;
 
     public static double xP = -0.04;
     public static double xD = -0.05;
@@ -33,7 +28,7 @@ public class swervePositionCommand extends CommandBase {
     public static double hP = 0.6;
     public static double hD = 0.3;
 
-    public static double k = 0.13;
+    public static double k = 0.124;
 
     public static PIDFController xController;
     public static PIDFController yController;
@@ -53,11 +48,8 @@ public class swervePositionCommand extends CommandBase {
     private ElapsedTime stable;
 
 
-    public swervePositionCommand(Drivetrain drivetrain, Localizer localizer, Pose targetPose, double voltage) {
-        this.drivetrain = drivetrain;
-        this.localizer = localizer;
+    public swervePositionCommand(Pose targetPose) {
         this.targetPose = targetPose;
-        this.v = voltage;
         this.ms = 5000;
 
         xController = new PIDFController(xP, 0.0, xD, 0);
@@ -65,11 +57,8 @@ public class swervePositionCommand extends CommandBase {
         hController = new PIDFController(hP, 0.0, hD, 0);
     }
 
-    public swervePositionCommand(Drivetrain drivetrain, Localizer localizer, Pose targetPose, int override, double voltage) {
-        this.drivetrain = drivetrain;
-        this.localizer = localizer;
+    public swervePositionCommand(Pose targetPose, int override) {
         this.targetPose = targetPose;
-        this.v = voltage;
         this.ms = override;
 
         xController = new PIDFController(xP, 0.0, xD, 0);
@@ -82,15 +71,15 @@ public class swervePositionCommand extends CommandBase {
         if (timer == null) timer = new ElapsedTime();
         if (stable == null) stable = new ElapsedTime();
 
-        Pose robotPose = localizer.getPos();
+        Pose robotPose = robot.localizer.getPos();
 
         Pose powers = getPower(robotPose);
-        drivetrain.set(powers);
+        robot.drivetrain.set(powers);
     }
 
     @Override
     public boolean isFinished() {
-        Pose robotPose = localizer.getPos();
+        Pose robotPose = robot.localizer.getPos();
         Pose delta = targetPose.subtract(robotPose);
 
         if (delta.toVec2D().magnitude() > ALLOWED_TRANSLATIONAL_ERROR
@@ -125,11 +114,11 @@ public class swervePositionCommand extends CommandBase {
         if (Math.abs(heading_power) < 0.01) heading_power = 0;
         else heading_power += k * Math.signum(heading_power);
 
-        return new Pose(-y_power  / v * 12, x_power / v * 12, -heading_power / v * 12);
+        return new Pose(-y_power  / robot.getVoltage() * 12, x_power / robot.getVoltage() * 12, -heading_power / robot.getVoltage() * 12);
     }
 
     @Override
     public void end(boolean interrupted) {
-        drivetrain.set(new Pose());
+        robot.drivetrain.set(new Pose());
     }
 }

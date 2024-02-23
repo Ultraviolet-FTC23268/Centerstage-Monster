@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Other.Pipelines;
+package org.firstinspires.ftc.teamcode.Common.Vision.Pipelines;
 
 public class AprilTagPipeline {
     //Haha you thought

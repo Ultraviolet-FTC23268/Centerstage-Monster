@@ -12,25 +12,19 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Common.Commands.auton.PositionCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.auton.swervePositionCommand;
-import org.firstinspires.ftc.teamcode.Common.Commands.auton.swervePositionCommand;
-import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;
-import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.TwoWheelLocalizer;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
 import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
 import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
 
 @Config
-@Autonomous(name = "Auto Pos Test")
+@Autonomous(name = "AutonPosTest")
 //@Disabled
 public class autonPosTest extends CommandOpMode {
 
     private ElapsedTime timer;
 
     private final RobotHardware robot = RobotHardware.getInstance();
-    private SwerveDrivetrain drivetrain;
-    private TwoWheelLocalizer localizer;
 
     private double loopTime = 0.0;
 
@@ -52,34 +46,35 @@ public class autonPosTest extends CommandOpMode {
     public void initialize() {
 
         Globals.USE_WHEEL_FEEDFORWARD = true;
+        Globals.AUTO = true;
         CommandScheduler.getInstance().reset();
 
         robot.init(hardwareMap, telemetry);
         robot.enabled = true;
-        drivetrain = new SwerveDrivetrain(robot);
-        localizer = new TwoWheelLocalizer(robot);
 
         telemetry = new MultipleTelemetry(FtcDashboard.getInstance().getTelemetry());
 
-        localizer.setPoseEstimate(new Pose2d( 0, 0, 0));
+        robot.localizer.setPoseEstimate(new Pose2d());
         testPos = new Pose(posX, posY, posH);
         testPos2 = new Pose(posX2, posY2, posH2);
 
-        robot.read(drivetrain, null);
+        robot.read();
 
         while (!isStarted()) {
-            robot.read(drivetrain, null);
-            drivetrain.frontLeftModule.setTargetRotation(0);
-            drivetrain.frontRightModule.setTargetRotation(0);
-            drivetrain.backRightModule.setTargetRotation(0);
-            drivetrain.backLeftModule.setTargetRotation(0);
-            drivetrain.updateModules();
+            robot.read();
+            robot.drivetrain.frontLeftModule.setTargetRotation(0);
+            robot.drivetrain.frontRightModule.setTargetRotation(0);
+            robot.drivetrain.backRightModule.setTargetRotation(0);
+            robot.drivetrain.backLeftModule.setTargetRotation(0);
+            robot.drivetrain.updateModules();
 
             telemetry.addLine("auto in init");
             telemetry.update();
             robot.clearBulkCache();
-            robot.write(drivetrain, null);
+            robot.write();
         }
+
+        robot.localizer.setPoseEstimate(new Pose2d(0, 0, 0));
 
         robot.startIMUThread(this);
         robot.reset();
@@ -87,9 +82,9 @@ public class autonPosTest extends CommandOpMode {
 
         CommandScheduler.getInstance().schedule(
                 new SequentialCommandGroup(
-                        new swervePositionCommand(drivetrain, localizer, testPos, dead, robot.getVoltage()),
+                        new swervePositionCommand(testPos, dead),
                         new WaitCommand(1000),
-                        new swervePositionCommand(drivetrain, localizer, testPos2, dead2, robot.getVoltage()),
+                        new swervePositionCommand(testPos2, dead2),
                         new WaitCommand(1000)
                 )
         );
@@ -98,22 +93,20 @@ public class autonPosTest extends CommandOpMode {
     @Override
     public void run() {
 
-        robot.read(drivetrain, null);
-
-        CommandScheduler.getInstance().run();
-
-        robot.loop(null, drivetrain, null);
-        localizer.periodic();
+        robot.clearBulkCache();
+        robot.read();
+        robot.loop(null);
+        robot.write();
 
         double loop = System.nanoTime();
         telemetry.addData("hz ", 1000000000 / (loop - loopTime));
-        telemetry.addData("xPos ", localizer.getPos().x);
-        telemetry.addData("yPos ", localizer.getPos().y);
-        telemetry.addData("hPos ", localizer.getPos().heading);
+        telemetry.addData("xPos ", robot.localizer.getPos().x);
+        telemetry.addData("yPos ", robot.localizer.getPos().y);
+        telemetry.addData("hPos ", robot.localizer.getPos().heading);
         loopTime = loop;
         telemetry.update();
 
-        robot.write(drivetrain, null);
-        robot.clearBulkCache();
+        CommandScheduler.getInstance().run();
+
     }
 }

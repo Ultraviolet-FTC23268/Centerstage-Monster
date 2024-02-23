@@ -6,10 +6,9 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
-import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.Localizer;
 import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
+import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
 
 import java.util.function.BooleanSupplier;
 
@@ -37,9 +36,6 @@ public class PositionLockCommand extends CommandBase {
     public static PIDFController hController = new PIDFController(hP, 0.0, hD, hF);
     public static double max_power = 1;
     public static double max_heading = 0.5;
-
-    private final SwerveDrivetrain drivetrain;
-    private final Localizer localizer;
     private static Pose targetPose;
 
     private final BooleanSupplier endSupplier;
@@ -49,9 +45,9 @@ public class PositionLockCommand extends CommandBase {
 
     private final double v;
 
-    public PositionLockCommand(SwerveDrivetrain drivetrain, Localizer localizer, BooleanSupplier end, double voltage) {
-        this.drivetrain = drivetrain;
-        this.localizer = localizer;
+    private RobotHardware robot = RobotHardware.getInstance();
+
+    public PositionLockCommand(BooleanSupplier end, double voltage) {
         this.v = voltage;
         this.endSupplier = end;
     }
@@ -73,16 +69,16 @@ public class PositionLockCommand extends CommandBase {
     @Override
     public void execute() {
         if (targetPose.x == 0 && targetPose.y == 0 && targetPose.heading == 0) {
-            drivetrain.setLocked(false);
+            robot.drivetrain.setLocked(false);
             return;
         }
 
-        Pose powers = goToPosition(localizer.getPos(), targetPose);
+        Pose powers = goToPosition(robot.localizer.getPos(), targetPose);
 
         if (!reached) lockedTimer.reset();
 
-        drivetrain.setLocked(lockedTimer.milliseconds() > 500);
-        drivetrain.set(reached ? new Pose() : powers);
+        robot.drivetrain.setLocked(lockedTimer.milliseconds() > 500);
+        robot.drivetrain.set(reached ? new Pose() : powers);
     }
 
     @Override
@@ -92,7 +88,7 @@ public class PositionLockCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        drivetrain.set(new Pose());
+        robot.drivetrain.set(new Pose());
         Globals.USE_WHEEL_FEEDFORWARD = false;
     }
 

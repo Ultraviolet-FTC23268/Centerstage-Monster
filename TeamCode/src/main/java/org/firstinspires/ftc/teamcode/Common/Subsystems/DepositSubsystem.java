@@ -29,7 +29,7 @@ import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
 @Config
 public class DepositSubsystem extends SubsystemBase {
 
-    private RobotHardware robot;
+    private RobotHardware robot = RobotHardware.getInstance();
 
     public DepositState depositState = DepositState.INTAKE;
 
@@ -72,9 +72,8 @@ public class DepositSubsystem extends SubsystemBase {
         OPEN
     }
 
-    public DepositSubsystem(RobotHardware robot) {
+    public DepositSubsystem() {
 
-        this.robot = robot;
         this.controller = new PIDController(P, I, D);
         this.timer = new ElapsedTime();
 

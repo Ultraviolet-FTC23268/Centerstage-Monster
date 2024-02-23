@@ -32,7 +32,9 @@ public class SwerveDrivetrain implements Drivetrain {
 
     private boolean locked = false;
 
-    public SwerveDrivetrain(RobotHardware robot) {
+    private RobotHardware robot = RobotHardware.getInstance();
+
+    public SwerveDrivetrain() {
         frontLeftModule = new SwerveModule(robot.frontLeftMotor, robot.frontLeftServo, new AbsoluteAnalogEncoder(robot.frontLeftEncoder, 3.3).zero(frontLeftOffset).setInverted(true));
         backLeftModule = new SwerveModule(robot.backLeftMotor, robot.backLeftServo, new AbsoluteAnalogEncoder(robot.backLeftEncoder, 3.3).zero(backLeftOffset).setInverted(true));
         backRightModule = new SwerveModule(robot.backRightMotor, robot.backRightServo, new AbsoluteAnalogEncoder(robot.backRightEncoder, 3.3).zero(backRightOffset).setInverted(true));

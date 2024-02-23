@@ -8,165 +8,171 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.arcrobotics.ftclib.command.CommandOpMode;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.ConditionalCommand;
 import com.arcrobotics.ftclib.command.InstantCommand;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.command.WaitUntilCommand;
+import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.Common.Commands.abobot.DepositCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.abobot.GateCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.abobot.IntakeCommand;
-import org.firstinspires.ftc.teamcode.Common.Commands.abobot.LiftCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.auton.CancelableResetArmCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.auton.RelocalizeCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.auton.swervePositionCommand;
-import org.firstinspires.ftc.teamcode.Common.Commands.auton.PositionCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.teleop.MoveArmCommand;
-import org.firstinspires.ftc.teamcode.Common.Commands.teleop.ScoreCommand;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
-import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.TwoWheelLocalizer;
-import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
 import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
-import org.firstinspires.ftc.teamcode.Other.Pipelines.PropPipeline;
-import org.firstinspires.ftc.teamcode.Other.Side;
+import org.firstinspires.ftc.teamcode.Common.Vision.Location;
+import org.firstinspires.ftc.teamcode.Common.Vision.Pipelines.PropPipeline;
 import org.firstinspires.ftc.vision.VisionPortal;
 
+@Photon
 @Config
 @Autonomous(name = "\uD83D\uDD35 ⇐ Preload Close Auto")
 public class preloadBlueCloseAuton extends CommandOpMode {
 
     private final RobotHardware robot = RobotHardware.getInstance();
-    private SwerveDrivetrain drivetrain;
-    private TwoWheelLocalizer localizer;
-    private DepositSubsystem deposit;
-    private IntakeSubsystem intake;
-
-    private LiftSubsystem lift;
 
     private PropPipeline propPipeline;
     private VisionPortal portal;
-
+    private Location randomization;
 
     private double loopTime = 0.0;
 
     public static int scoreDelay = 500;
 
-    public static int intakeScoreLength = 750;
+    public static int prePurpleOverride = 5000;
+    public static int purpleOverride = 1500;
+    public static int purpleBackOverride = 1000;
+    public static int backdropOverride = 5000;
+    public static int yellowOverride = 5000;
+    public static int parkOverride = 5000;
 
-    public static double preYellowPosX = -28;
-    public static double preYellowPosY= 35;
-    public static double preYellowPosH = Math.PI;
+    public static double hOffset = -5;
 
-    public static double yellowPosX = -37;
-    public static double yellowPosY= 35;
-    public static double yellowPosH = Math.PI;
+    public static double pBackupDistance = 5;
 
-    public static double purplePosX = -7;
-    public static double purplePosY= 32;
-    public static double purplePosH = 0;
+    //Position Constants
 
-    public static double parkPosX = -32;
-    public static double parkPosY= 10;
-    public static double parkPosH = 0;
+    public static double pPoseX = -45;
+    public static double pPoseY = 18;
 
-    public static int preYellowOverride = 5000;//2000;
-    public static int yellowOverride = 1000;
-    public static int prePurpleOverride = 5000;//1500;
-    public static int purpleOverride = 5000;//2500;
-    public static int parkOverride = 2500;
+    public static double prePoseY = 16;
 
-    public static int bucketHeightOffset = 0;
+    public static double pbPoseX = -55;
+    public static double pbPoseY = 18;
+
+    public static double yPoseX = -28;
+    public static double yPoseY = 51;
+
+    public static double bPoseX = -40;
+    public static double bPoseY = 40;
+
+    public static double parkPoseX = -61;
+    public static double parkPoseY = 46;
 
     @Override
     public void initialize() {
 
         CommandScheduler.getInstance().reset();
 
-        Globals.COLOR = Side.BLUE;
-        Globals.SIDE = Side.LEFT;
+        Globals.ALLIANCE = Location.BLUE;
+        Globals.SIDE = Location.CLOSE;
         Globals.USE_WHEEL_FEEDFORWARD = true;
+        Globals.AUTO = true;
 
         robot.init(hardwareMap, telemetry);
         robot.enabled = true;
-        drivetrain = new SwerveDrivetrain(robot);
-        localizer = new TwoWheelLocalizer(robot);
-        lift = new LiftSubsystem(robot);
-        deposit = new DepositSubsystem(robot);
-        intake = new IntakeSubsystem(robot);
 
-        localizer.setPoseEstimate(new Pose2d(0, 0, 0));
+        robot.localizer.setPoseEstimate(new Pose2d());
+
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+        robot.deposit.update(DepositSubsystem.DepositState.INTAKE);
+        robot.deposit.update(DepositSubsystem.GateState.CLOSED);
+        robot.purpleLatch.setPosition(Globals.PURPLE_CLOSED);
 
         propPipeline = new PropPipeline();
         portal = new VisionPortal.Builder()
                 .setCamera(hardwareMap.get(WebcamName.class, "Webcam"))
                 .setCameraResolution(new Size(1280, 720))
-                .setCamera(BuiltinCameraDirection.BACK)
                 .addProcessor(propPipeline)
-//                .setStreamFormat(VisionPortal.StreamFormat.MJPEG)
                 .enableLiveView(true)
                 .setAutoStopLiveView(true)
                 .build();
 
-        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+        while (portal.getCameraState() != VisionPortal.CameraState.STREAMING) {
+            telemetry.addLine("initializing... please wait");
+            telemetry.update();
+            if(isStopRequested()) portal.close();
+        }
 
-        deposit.update(DepositSubsystem.DepositState.INTAKE);
-        deposit.update(DepositSubsystem.GateState.CLOSED);
-
-        robot.read(drivetrain, null);
         while (!isStarted()) {
-            robot.read(drivetrain, null);
-            drivetrain.frontLeftModule.setTargetRotation(0);
-            drivetrain.frontRightModule.setTargetRotation(0);
-            drivetrain.backRightModule.setTargetRotation(0);
-            drivetrain.backLeftModule.setTargetRotation(0);
-            drivetrain.updateModules();
+            if(isStopRequested()) portal.close();
+
+            robot.read();
+            robot.drivetrain.frontLeftModule.setTargetRotation(0);
+            robot.drivetrain.frontRightModule.setTargetRotation(0);
+            robot.drivetrain.backRightModule.setTargetRotation(0);
+            robot.drivetrain.backLeftModule.setTargetRotation(0);
+            robot.drivetrain.updateModules();
 
             telemetry.addLine("auto in init");
             telemetry.addData("POS", propPipeline.getLocation());
             telemetry.update();
 
             robot.clearBulkCache();
-            robot.write(drivetrain, null);
+            robot.write();
         }
 
-        localizer.setPoseEstimate(new Pose2d(0, 0, 0));
 
-        Side side = propPipeline.getLocation();
+        robot.localizer.setPoseEstimate(new Pose2d(62, -16, 0));
+
+        randomization = propPipeline.getLocation();
+        Globals.RANDOMIZATION = randomization;
         portal.close();
 
-        Pose preYellowScorePos = new Pose();
-        Pose yellowScorePos = new Pose();
+        RobotHardware.getInstance().preloadDetectionPipeline.setTargetAprilTagID(randomization);
+
+        Pose parkPos = new Pose(parkPoseX, parkPoseY, Math.PI +Math.toRadians(hOffset));
+
+        Pose backdropPos = new Pose();
         Pose prePurplePos = new Pose();
         Pose purpleScorePos = new Pose();
-        Pose parkPos = new Pose();
+        Pose purpleBackPos = new Pose();
+        Pose yellowScorePos = new Pose();
 
-        switch (side) {
+        switch (randomization) {
             case LEFT:
-                prePurplePos =  new Pose(-9, 30, -Math.PI/2);
-                purpleScorePos = new Pose(-9, 30, -Math.PI/2);
-                preYellowScorePos = new Pose(-28, 26, Math.PI);
-                yellowScorePos = new Pose(-37, 26, Math.PI);
-                parkPos = new Pose(parkPosX, parkPosY, Math.PI); //y: 52 for other park
+                prePurplePos = new Pose(-32, 24, 0 +Math.toRadians(hOffset));
+                purpleScorePos = new Pose(-32, 24, 0 +Math.toRadians(hOffset));
+                purpleBackPos = new Pose(-52, 24, 0 +Math.toRadians(hOffset));
+                yellowScorePos = new Pose(-29, 51, Math.PI/2 +Math.toRadians(hOffset));
+                backdropPos = new Pose(-28, 45, Math.PI/2 +Math.toRadians(hOffset));
+                hOffset--;
                 break;
             case CENTER:
-                prePurplePos = new Pose(-5 , 42, Math.PI);
-                purpleScorePos = new Pose(-5, 42, Math.PI);
-                preYellowScorePos = new Pose(-28, 30, Math.PI);
-                yellowScorePos = new Pose(-37, 30, Math.PI);
-                parkPos = new Pose(parkPosX, parkPosY, Math.PI); //y: 52 for other park
+                prePurplePos = new Pose(-26, 21, -Math.PI/2 +Math.toRadians(hOffset));
+                purpleScorePos = new Pose(-26, 21, -Math.PI/2 +Math.toRadians(hOffset));
+                purpleBackPos = new Pose(-26, 26, -Math.PI/2 +Math.toRadians(hOffset));
+                yellowScorePos = new Pose(-35, 51, Math.PI/2 +Math.toRadians(hOffset));
+                backdropPos = new Pose(-30, 46, Math.PI/2 +Math.toRadians(hOffset));
                 break;
             case RIGHT:
-                prePurplePos = new Pose(-2, 32, Math.PI);
-                purpleScorePos = new Pose(7, 32, Math.PI);
-                preYellowScorePos = new Pose(-28, 35, Math.PI);
-                yellowScorePos = new Pose(-37, 35, Math.PI);
-                parkPos = new Pose(parkPosX, parkPosY, Math.PI); //y: 52 for other park
+                prePurplePos = new Pose(-34, 18, -Math.PI/2 +Math.toRadians(hOffset));
+                purpleScorePos = new Pose(-34, 10, -Math.PI/2 +Math.toRadians(hOffset));
+                purpleBackPos = new Pose(-34, 18, -Math.PI/2 +Math.toRadians(hOffset));
+                yellowScorePos = new Pose(-42, 51, Math.PI/2 +Math.toRadians(hOffset));
+                backdropPos = new Pose(-35, 47, Math.PI/2 +Math.toRadians(hOffset));
+                hOffset++;
                 break;
             default:
                 break;
@@ -179,35 +185,40 @@ public class preloadBlueCloseAuton extends CommandOpMode {
         CommandScheduler.getInstance().schedule(
                 new SequentialCommandGroup(
 
-                        //prepurple for right only
-                        new swervePositionCommand(drivetrain, localizer, prePurplePos, prePurpleOverride, robot.getVoltage())
-                                .alongWith(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.ROW1)),
+                        new InstantCommand(() -> robot.startCamera()),
 
-                        //go to purple pos
-                        new swervePositionCommand(drivetrain, localizer, purpleScorePos, purpleOverride, robot.getVoltage()),
+                        new swervePositionCommand(prePurplePos, prePurpleOverride),
 
-                        //score purple pixel
-                        new IntakeCommand(intake, IntakeSubsystem.IntakeState.AUTON_OUTWARDS)
-                                .alongWith(new WaitCommand(intakeScoreLength)),
-                        new IntakeCommand(intake, IntakeSubsystem.IntakeState.OFF),
+                        //purple pos
+                        new swervePositionCommand(purpleScorePos, purpleOverride),
 
-                        //go to pre yellow pos
-                        new swervePositionCommand(drivetrain, localizer, preYellowScorePos, preYellowOverride, robot.getVoltage())
-                                .alongWith(new InstantCommand( () -> lift.setTargetPos(Globals.ROW1_POS-bucketHeightOffset))),
+                        //drop purple
+                        new InstantCommand(() -> robot.purpleLatch.setPosition(Globals.PURPLE_OPEN)),
+                        new WaitCommand(500),
 
-                        //go to yellow pos
-                        new swervePositionCommand(drivetrain, localizer, yellowScorePos, yellowOverride, robot.getVoltage()),
+                        //back up
+                        new swervePositionCommand(purpleBackPos, purpleBackOverride)
+                                .alongWith(new MoveArmCommand(LiftSubsystem.LiftStateReel.AUTO)),
+
+                        //backdrop pos
+                        new swervePositionCommand(backdropPos, backdropOverride),
+
+                        //relocalize
+                        new RelocalizeCommand(),
+                        new InstantCommand(() -> robot.closeCamera()),
+
+                        //yellow pos
+                        new swervePositionCommand(yellowScorePos, yellowOverride),
 
                         //score yellow
-                        new GateCommand(deposit, DepositSubsystem.GateState.OPEN),
+                        new GateCommand(DepositSubsystem.GateState.OPEN),
                         new WaitCommand(scoreDelay),
 
+                        new swervePositionCommand(new Pose(yellowScorePos.getX(), (yellowScorePos.getY()-8), Math.PI/2), 2000),
+
                         //park
-                        new swervePositionCommand(drivetrain, localizer, parkPos, parkOverride, robot.getVoltage())
-                                .alongWith(new CancelableResetArmCommand(lift, deposit)),
-
-                        new swervePositionCommand(drivetrain, localizer, new Pose(parkPosX, parkPosY, -Math.PI/2), parkOverride, robot.getVoltage())
-
+                        new swervePositionCommand(parkPos, parkOverride)
+                                .alongWith(new CancelableResetArmCommand())
                 )
         );
     }
@@ -215,19 +226,18 @@ public class preloadBlueCloseAuton extends CommandOpMode {
     @Override
     public void run() {
 
-        robot.read(drivetrain, lift);
-
-        CommandScheduler.getInstance().run();
-
-        robot.loop(null, drivetrain, lift);
-        localizer.periodic();
+        robot.clearBulkCache();
+        robot.read();
+        robot.loop(null);
+        robot.write();
 
         double loop = System.nanoTime();
         telemetry.addData("hz ", 1000000000 / (loop - loopTime));
+        telemetry.addData("BACKDROP", RobotHardware.getInstance().preloadDetectionPipeline.getPreloadedZone());
         loopTime = loop;
         telemetry.update();
 
-        robot.write(drivetrain, lift);
-        robot.clearBulkCache();
+        CommandScheduler.getInstance().run();
+
     }
 }

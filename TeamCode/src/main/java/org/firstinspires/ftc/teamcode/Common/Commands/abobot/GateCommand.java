@@ -4,11 +4,12 @@ import com.arcrobotics.ftclib.command.InstantCommand;
 
 import org.firstinspires.ftc.teamcode.Common.Subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.IntakeSubsystem;
+import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
 
 public class GateCommand extends InstantCommand {
-    public GateCommand(DepositSubsystem deposit, DepositSubsystem.GateState state) {
+    public GateCommand(DepositSubsystem.GateState state) {
         super(
-                () -> deposit.update(state)
+                () ->  RobotHardware.getInstance().deposit.update(state)
         );
     }
 }

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.function.DoubleSupplier;
 
 @Config
-public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer implements Localizer {
+public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer {
     public static double TICKS_PER_REV = 8192;
     public static double WHEEL_RADIUS = 0.689;
     public static double GEAR_RATIO = 1;
@@ -27,7 +27,10 @@ public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer implements Loca
 
     private final DoubleSupplier horizontalPosition, lateralPosition, imuAngle;
 
-    public TwoWheelLocalizer(RobotHardware robot) {
+    private final RobotHardware robot = RobotHardware.getInstance();
+
+
+    public TwoWheelLocalizer() {
 
         super(Arrays.asList(
                 new Pose2d(PARALLEL_X, PARALLEL_Y, 0),
@@ -69,17 +72,15 @@ public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer implements Loca
         return Arrays.asList(0.0, 0.0);
     }
 
-    @Override
     public Pose getPos() {
         Pose2d pose = getPoseEstimate();
         return new Pose(-pose.getX(), -pose.getY(), pose.getHeading());
     }
 
-    @Override
     public void setPos(Pose pose) {
+        super.setPoseEstimate(new Pose2d(-pose.x, -pose.y, pose.heading));
     }
 
-    @Override
     public void periodic() {
         super.update();
     }

@@ -9,13 +9,14 @@ import org.firstinspires.ftc.teamcode.Common.Commands.abobot.LiftCommand;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
+import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
 
 public class ScoreCommand extends SequentialCommandGroup {
-    public ScoreCommand(LiftSubsystem lift, DepositSubsystem deposit) {
+    public ScoreCommand() {
 
-        if(lift.isUp) {
+        if( RobotHardware.getInstance().lift.isUp) {
             addCommands(
-                    new GateCommand(deposit, DepositSubsystem.GateState.OPEN),
+                    new GateCommand(DepositSubsystem.GateState.OPEN),
                     new WaitCommand(Globals.SCORE_DROP_DELAY)
             );
         }

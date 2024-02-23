@@ -13,35 +13,32 @@ import com.arcrobotics.ftclib.command.WaitCommand;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.outoftheboxrobotics.photoncore.Photon;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.Common.Commands.abobot.SpeedChangeCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.teleop.ClimbUpCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.teleop.ConditionalintakeCommand;
+import org.firstinspires.ftc.teamcode.Common.Commands.teleop.DisableAllCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.teleop.EjectCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.teleop.IncrementedMoveArmCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.teleop.MoveArmCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.teleop.ResetArmCommand;
-import org.firstinspires.ftc.teamcode.Common.Commands.teleop.DisableAllCommand;
 import org.firstinspires.ftc.teamcode.Common.Commands.teleop.ScoreCommand;
-import org.firstinspires.ftc.teamcode.Common.Commands.teleop.UnscoreCommand;
-import org.firstinspires.ftc.teamcode.Common.Commands.teleop.ConditionalintakeCommand;
-import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SlewRateLimiter;
-import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Point;
 import org.firstinspires.ftc.teamcode.Common.Drivetrain.geometry.Pose;
-import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.Localizer;
-import org.firstinspires.ftc.teamcode.Common.Drivetrain.localizer.TwoWheelLocalizer;
+import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SlewRateLimiter;
+import org.firstinspires.ftc.teamcode.Common.Drivetrain.swerve.SwerveDrivetrain;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.DepositSubsystem;
-import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
-import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.LiftSubsystem;
+import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
+import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
 
-//@Photon(maximumParallelCommands = 8)
+@Photon
 @Config
-@TeleOp(name = "\uD83D\uDCB2\uD83D\uDCB8\uD83E\uDD11")
-public class Teleop extends CommandOpMode {
+@TeleOp(name = "Solo")
+public class SoloTeleop extends CommandOpMode {
     private ElapsedTime timer;
     private double loopTime = 0;
 
@@ -49,10 +46,6 @@ public class Teleop extends CommandOpMode {
     private double targetHeading;
 
     private final RobotHardware robot = RobotHardware.getInstance();
-    private SwerveDrivetrain drivetrain;
-    private IntakeSubsystem intake;
-    private LiftSubsystem lift;
-    private DepositSubsystem deposit;
 
     private SlewRateLimiter fw;
     private SlewRateLimiter str;
@@ -64,7 +57,6 @@ public class Teleop extends CommandOpMode {
 
 
     GamepadEx gamepadEx, gamepadEx2;
-    Localizer localizer;
 
     public static boolean autoGrabActive = false;
 
@@ -79,20 +71,14 @@ public class Teleop extends CommandOpMode {
         Globals.USE_WHEEL_FEEDFORWARD = false;
 
         robot.init(hardwareMap, telemetry);
-        drivetrain = new SwerveDrivetrain(robot);
-        intake = new IntakeSubsystem(robot);
-        lift = new LiftSubsystem(robot);
-        deposit = new DepositSubsystem(robot);
         gamepadEx = new GamepadEx(gamepad1);
         gamepadEx2 = new GamepadEx(gamepad2);
-        localizer = new TwoWheelLocalizer(robot);
 
         robot.enabled = true;
-        robot.startIMUThread(this);
 
         robot.droneLatch.setPosition(Globals.DRONE_CLOSED);
-        deposit.update(DepositSubsystem.DepositState.INTAKE);
-        deposit.update(DepositSubsystem.GateState.OPEN);
+        robot.deposit.update(DepositSubsystem.DepositState.INTAKE);
+        robot.deposit.update(DepositSubsystem.GateState.OPEN);
 
         //robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_2_COLOR_WAVES);
 
@@ -100,31 +86,31 @@ public class Teleop extends CommandOpMode {
 
         //Intake
         gamepadEx.getGamepadButton(GamepadKeys.Button.A)
-                .whenPressed(() -> schedule(new ConditionalintakeCommand(intake, lift, IntakeSubsystem.IntakeState.INWARDS)));
+                .whenPressed(() -> schedule(new ConditionalintakeCommand(IntakeSubsystem.IntakeState.INWARDS)));
         gamepadEx.getGamepadButton(GamepadKeys.Button.A)
                 .whenReleased(() -> schedule(new SequentialCommandGroup( /*new ConditionalintakeCommand(intake, lift, IntakeSubsystem.IntakeState.OUTWARDS),
                                                                          new WaitCommand(Globals.OUTTAKE_DELAY),*/
-                                                                         new ConditionalintakeCommand(intake, lift, IntakeSubsystem.IntakeState.OFF))));
+                                                                         new ConditionalintakeCommand(IntakeSubsystem.IntakeState.OFF))));
 
         //Outtake
         gamepadEx.getGamepadButton(GamepadKeys.Button.X)
-                .whenPressed(() -> schedule(new ConditionalintakeCommand(intake, lift, IntakeSubsystem.IntakeState.OUTWARDS)));
+                .whenPressed(() -> schedule(new ConditionalintakeCommand(IntakeSubsystem.IntakeState.OUTWARDS)));
         gamepadEx.getGamepadButton(GamepadKeys.Button.X)
-                .whenReleased(() -> schedule(new ConditionalintakeCommand(intake, lift, IntakeSubsystem.IntakeState.OFF)));
+                .whenReleased(() -> schedule(new ConditionalintakeCommand(IntakeSubsystem.IntakeState.OFF)));
 
         //Toggle Field Centric
         gamepadEx.getGamepadButton(GamepadKeys.Button.Y)
                 .whenPressed(() -> Globals.USING_IMU = Globals.USING_IMU == true ? false : true);
 
         //Disable Swerve
-        gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+        /*gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
                 .whenPressed(() -> Globals.SWERVE = false);
 
         gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .whenPressed(() -> Globals.SWERVE = true);
 
         gamepadEx.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
-                .whenPressed(() -> schedule(new InstantCommand( () -> lift.setTargetPos(Globals.ROW1_POS-150))));
+                .whenPressed(() -> schedule(new InstantCommand( () -> RobotHardware.getInstance().lift.setTargetPos(Globals.ROW1_POS-150))));
 
         /*gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_UP)
                 .whenPressed(() -> robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.WHITE));
@@ -138,44 +124,45 @@ public class Teleop extends CommandOpMode {
         //GAMEPAD 2
 
         //Reset Lift
-        gamepadEx2.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
-                .whenPressed(() -> schedule(new ResetArmCommand(lift, deposit)));
+        gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT)
+                .whenPressed(() -> schedule(new SequentialCommandGroup(new InstantCommand( () -> CommandScheduler.getInstance().cancelAll()),
+                                                                       new ResetArmCommand())));
 
         //Max Lift
-        gamepadEx2.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
-                .whenPressed(() -> schedule(new MoveArmCommand(lift, deposit, LiftSubsystem.LiftStateReel.MAX)));
+        gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_LEFT)
+                .whenPressed(() -> schedule(new MoveArmCommand(LiftSubsystem.LiftStateReel.MAX)));
 
         //Move Up a Row
-        gamepadEx2.getGamepadButton(GamepadKeys.Button.DPAD_UP)
-                .whenPressed(() -> schedule(new IncrementedMoveArmCommand(lift, deposit, 1)));
+        gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_UP)
+                .whenPressed(() -> schedule(new IncrementedMoveArmCommand(1)));
 
         //Move Down a Row
-        gamepadEx2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
-                .whenPressed(() -> schedule(new IncrementedMoveArmCommand(lift, deposit, -1)));
+        gamepadEx.getGamepadButton(GamepadKeys.Button.DPAD_DOWN)
+                .whenPressed(() -> schedule(new IncrementedMoveArmCommand(-1)));
 
         //Score
-        gamepadEx2.getGamepadButton(GamepadKeys.Button.B)
-                .whenPressed(() -> schedule(new ScoreCommand(lift, deposit)));
-        gamepadEx2.getGamepadButton(GamepadKeys.Button.B)
-                .whenReleased(() -> schedule(new ResetArmCommand(lift, deposit)));
+        gamepadEx.getGamepadButton(GamepadKeys.Button.B)
+                .whenPressed(() -> schedule(new ScoreCommand()));
+        gamepadEx.getGamepadButton(GamepadKeys.Button.B)
+                .whenReleased(() -> schedule(new ResetArmCommand()));
 
         //Eject Pixels
         gamepadEx2.getGamepadButton(GamepadKeys.Button.X)
-                .whenPressed(() -> schedule(new EjectCommand(lift, deposit)));
+                .whenPressed(() -> schedule(new EjectCommand()));
         gamepadEx2.getGamepadButton(GamepadKeys.Button.X)
-                .whenReleased(() -> schedule(new ResetArmCommand(lift, deposit)));
+                .whenReleased(() -> schedule(new ResetArmCommand()));
 
         //Climb Height
-        gamepadEx2.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
+        gamepadEx.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER)
                 .whenPressed(() -> schedule(new SequentialCommandGroup(new InstantCommand( () -> CommandScheduler.getInstance().cancelAll()),
-                                                                       new ClimbUpCommand(lift, deposit))));
+                                                                       new ClimbUpCommand())));
 
         //Disable all servos (not really lol)
-        gamepadEx2.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
+        gamepadEx.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER)
                 .whileHeld(() -> schedule(new DisableAllCommand(robot)));
 
         //Launch Drone
-        gamepadEx2.getGamepadButton(GamepadKeys.Button.Y)
+        gamepadEx.getGamepadButton(GamepadKeys.Button.Y)
                 .whenPressed(() -> schedule(new SequentialCommandGroup(new InstantCommand( () -> robot.droneLatch.setPosition(Globals.DRONE_OPEN)),
                                                                        new WaitCommand(500),
                                                                        new InstantCommand(() -> robot.droneLatch.setPosition(Globals.DRONE_CLOSED)))));
@@ -184,6 +171,7 @@ public class Teleop extends CommandOpMode {
 
     @Override
     public void run() {
+
         super.run();
 
         if (timer == null) {
@@ -194,7 +182,8 @@ public class Teleop extends CommandOpMode {
             robot.droneLatch.setPosition(Globals.DRONE_CLOSED);
         }
 
-        robot.read(drivetrain, lift);
+        robot.clearBulkCache();
+        robot.read();
 
         if (gamepad1.right_stick_button && Globals.USING_IMU)
             SwerveDrivetrain.imuOffset = robot.getAngle() + 0;
@@ -252,27 +241,14 @@ public class Teleop extends CommandOpMode {
                 drive.heading
         );
 
-        robot.loop(drive, drivetrain, lift);
-        robot.write(drivetrain, lift);
-        localizer.periodic();
+        robot.loop(drive);
+        robot.write();
 
         double loop = System.nanoTime();
-        Pose currentPose = localizer.getPos();
-
-
         telemetry.addData("hz: ", 1000000000 / (loop - loopTime));
-        /*telemetry.addData("target: ", lift.getTargetPos());
-        telemetry.addData("leftArm: ", robot.leftArmEncoder.getPosition());
-        telemetry.addData("rightArm: ", robot.rightArmEncoder.getPosition());
-        /*telemetry.addData("parallel: ", robot.parallelPod.getPosition());
-        telemetry.addData("perpendicular: ", robot.perpindicularPod.getPosition());
-        telemetry.addData("poseX", currentPose.x);
-        telemetry.addData("poseY", currentPose.y);*/
 
         loopTime = loop;
         telemetry.update();
-
-        robot.clearBulkCache();
     }
 
     private double joystickScalar(double num, double min) {

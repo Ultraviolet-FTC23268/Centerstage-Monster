@@ -9,15 +9,16 @@ import org.firstinspires.ftc.teamcode.Common.Subsystems.DepositSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.IntakeSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
+import org.firstinspires.ftc.teamcode.Common.Utility.RobotHardware;
 
 public class ConditionalintakeCommand extends SequentialCommandGroup {
-    public ConditionalintakeCommand(IntakeSubsystem intake, LiftSubsystem lift, IntakeSubsystem.IntakeState state) {
+    public ConditionalintakeCommand(IntakeSubsystem.IntakeState state) {
 
-        if(!lift.isUp)
-            addCommands(new IntakeCommand(intake, state));
+        if(! RobotHardware.getInstance().lift.isUp)
+            addCommands(new IntakeCommand(state));
 
         else
-            intake.update(IntakeSubsystem.IntakeState.OFF);
+            RobotHardware.getInstance().intake.update(IntakeSubsystem.IntakeState.OFF);
 
     }
 }

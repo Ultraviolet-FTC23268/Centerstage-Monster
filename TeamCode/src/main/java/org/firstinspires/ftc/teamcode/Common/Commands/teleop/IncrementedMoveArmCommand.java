@@ -12,13 +12,13 @@ import org.firstinspires.ftc.teamcode.Common.Subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
 
 public class IncrementedMoveArmCommand extends SequentialCommandGroup {
-    public IncrementedMoveArmCommand(LiftSubsystem lift, DepositSubsystem deposit, int amount) {
+    public IncrementedMoveArmCommand(int amount) {
 
         super(
-                new GateCommand(deposit, DepositSubsystem.GateState.CLOSED),
-                new IncrementLiftCommand(lift, amount),
+                new GateCommand(DepositSubsystem.GateState.CLOSED),
+                new IncrementLiftCommand(amount),
                 new WaitCommand(Globals.FLIP_OUT_DELAY),
-                new DepositCommand(deposit, DepositSubsystem.DepositState.DEPOSIT)
+                new DepositCommand(DepositSubsystem.DepositState.DEPOSIT)
         );
 
     }

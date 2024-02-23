@@ -13,24 +13,20 @@ import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 @Config
 public class IntakeSubsystem {
 
-    private RobotHardware robot;
+    private RobotHardware robot = RobotHardware.getInstance();
 
     public IntakeState intakeState = IntakeState.OFF;
 
     public static double intakeInSpeed = -1;
     public static double intakeOutSpeed = 1;
-    public static double intakeOutSpeedAuton = .35;
 
     public enum IntakeState {
         OFF,
         INWARDS,
-        OUTWARDS,
-        AUTON_OUTWARDS,
+        OUTWARDS
     }
 
-    public IntakeSubsystem(RobotHardware robot) {
-
-        this.robot = robot;
+    public IntakeSubsystem() {
 
     }
 
@@ -50,10 +46,6 @@ public class IntakeSubsystem {
                 break;
             case OUTWARDS:
                 robot.intakeMotor.setPower(intakeOutSpeed);
-                //robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP2_HEARTBEAT_FAST);
-                break;
-            case AUTON_OUTWARDS:
-                robot.intakeMotor.setPower(intakeOutSpeedAuton);
                 //robot.LEDcontroller.setPattern(RevBlinkinLedDriver.BlinkinPattern.CP2_HEARTBEAT_FAST);
                 break;
 

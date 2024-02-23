@@ -10,12 +10,12 @@ import org.firstinspires.ftc.teamcode.Common.Subsystems.LiftSubsystem;
 import org.firstinspires.ftc.teamcode.Common.Utility.Globals;
 
 public class ClimbUpCommand extends SequentialCommandGroup {
-    public ClimbUpCommand(LiftSubsystem lift, DepositSubsystem deposit) {
+    public ClimbUpCommand() {
 
         super(
-                new LiftCommand(lift, LiftSubsystem.LiftStateReel.MAX),
+                new LiftCommand(LiftSubsystem.LiftStateReel.MAX),
                 new WaitCommand(Globals.FLIP_OUT_DELAY),
-                new DepositCommand(deposit, DepositSubsystem.DepositState.HANG)
+                new DepositCommand(DepositSubsystem.DepositState.HANG)
         );
 
     }

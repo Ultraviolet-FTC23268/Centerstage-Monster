@@ -16,7 +16,7 @@ import static org.firstinspires.ftc.teamcode.Common.Utility.Globals.*;
 @Config
 public class LiftSubsystem extends SubsystemBase {
 
-    private RobotHardware robot;
+    private RobotHardware robot = RobotHardware.getInstance();
 
     private final ElapsedTime timer;
     private AsymmetricMotionProfile liftProfile;
@@ -46,6 +46,7 @@ public class LiftSubsystem extends SubsystemBase {
 
     public enum LiftStateReel {
         DOWN,
+        AUTO,
         ROW1,
         ROW2,
         ROW3,
@@ -60,9 +61,8 @@ public class LiftSubsystem extends SubsystemBase {
         MAX
     }
 
-    public LiftSubsystem(RobotHardware robot) {
+    public LiftSubsystem() {
 
-        this.robot = robot;
         this.liftProfile = new AsymmetricMotionProfile(0, 1, new ProfileConstraints(0, 0, 0));
         this.controller = new PIDController(P, I, D);
         this.timer = new ElapsedTime();
@@ -81,6 +81,9 @@ public class LiftSubsystem extends SubsystemBase {
 
             case DOWN:
                 setTargetPos(DOWN_POS);
+                break;
+            case AUTO:
+                setTargetPos(AUTO_POS);
                 break;
             case ROW1:
                 setTargetPos(ROW1_POS);
@@ -201,7 +204,7 @@ public class LiftSubsystem extends SubsystemBase {
     }
     public void read() {
         try {
-            leftLiftPos = robot.leftArmEncoder.getPosition();
+            //leftLiftPos = robot.leftArmEncoder.getPosition();
             rightLiftPos = robot.rightArmEncoder.getPosition();
 
         } catch (Exception e) {
